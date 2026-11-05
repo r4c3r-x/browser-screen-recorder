@@ -18,7 +18,7 @@ Chromium-first browsers.
 - [x] 03-audio-mixing — mic + system audio mixing, session state machine, fail-soft mic
 - [x] 04-ui-shell — controls, status panel, error banner, live preview, styles
 - [x] 05-integration-audit — e2e test, failure-path matrix, docs finalization, merge to main
-- [x] 06-transcript — online (BYOK) transcription of the finished recording, .srt + .txt downloads
+- [x] 06-transcript — offline (Vosk/Kaldi, in-browser) transcription, .srt + .txt downloads
 
 ## Decisions log
 
@@ -29,7 +29,7 @@ Chromium-first browsers.
 | 2026-11-06 | Library + webcam overlay deferred | Phase-2 candidates; cheapest time to cut scope is before code exists |
 | 2026-11-06 | Local-only git | No remote exists; vibe §3 push rule documented as deviation until one is added |
 | 2026-11-06 | Chromium-only e2e automation | getDisplayMedia is flag-automatable in Chromium; Firefox/Safari covered by manual matrix |
-| 2026-11-06 | Transcript via on-device Whisper (transformers.js) | User asked for a transcript download; on-device is the only option that transcribes the real recording (mic + system audio) without uploading audio. Live Web Speech API was rejected: Chrome sends mic audio to Google and it cannot hear system audio. Model loads lazily in a worker on first use |
+| 2026-11-06 | Transcript engine: Vosk (Kaldi) offline, in-browser | Final user directive: "free only, no AI services". Vosk via vosk-browser WASM is keyless, accountless, fully offline (classic statistical ASR, not a neural model). Supersedes the earlier online BYOK design; the online engine was removed. Model: 41 MB small US-English from a CORS-verified mirror, cached after first use |
 
 ## Failure paths that must ship in v1
 

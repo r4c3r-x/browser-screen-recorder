@@ -37,7 +37,7 @@ export function createTranscriptControls(handlers: TranscriptControlHandlers): T
     phase: TranscriberPhase,
     hasSegments: boolean,
   ): void {
-    const busy = phase === 'encoding' || phase === 'uploading';
+    const busy = phase === 'loading-model' || phase === 'transcribing';
     transcribe.disabled = !(state === 'finished' && hasResult && !busy);
 
     const canSave = phase === 'done' && hasSegments;
@@ -55,10 +55,10 @@ export function createTranscriptControls(handlers: TranscriptControlHandlers): T
 
   function statusTextFor(phase: TranscriberPhase, hasSegments: boolean): string {
     switch (phase) {
-      case 'encoding':
-        return 'Preparing audio track…';
-      case 'uploading':
-        return 'Uploading audio and transcribing…';
+      case 'loading-model':
+        return 'Loading the offline speech model… (41 MB, first run only)';
+      case 'transcribing':
+        return 'Transcribing…';
       case 'done':
         return hasSegments ? 'Transcript ready.' : 'No speech detected in this recording.';
       case 'error':

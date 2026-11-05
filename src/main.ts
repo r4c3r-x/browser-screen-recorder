@@ -7,8 +7,7 @@ import {
   extensionFromMime,
 } from './recorder/filename';
 import { createRecordingSession } from './recorder/recording-session';
-import { createTranscriber } from './transcript/transcriber';
-import { loadTranscriptionSettings, saveTranscriptionSettings } from './transcript/settings-storage';
+import { createTranscriber } from './transcript/vosk-transcriber';
 import { formatSrt, formatTranscript } from './transcript/srt';
 import type {
   RecordingResult,
@@ -24,9 +23,6 @@ import { createTranscriptControls } from './ui/transcript-controls';
 const bannerRegion = requireElement('banner-region');
 const preview = requireVideo('preview');
 const previewEmpty = requireElement('preview-empty');
-const baseUrlInput = requireInput('transcribe-base-url');
-const modelInput = requireInput('transcribe-model');
-const apiKeyInput = requireInput('transcribe-api-key');
 
 const session = createRecordingSession();
 const banner = createErrorBanner(bannerRegion);
@@ -60,7 +56,7 @@ const controls = createControls({
 const transcriptControls = createTranscriptControls({
   onTranscribe: () => {
     if (lastResult) {
-      void transcriber.transcribe(lastResult.blob, readSettingsFromForm());
+      void transcriber.transcribe(lastResult.blob);
     }
   },
   onDownloadTranscript: () => {
@@ -163,27 +159,6 @@ function refreshTranscriptControls(): void {
   transcriptControls.update(session.getState(), lastResult !== null, transcriptPhase, hasSegments);
 }
 
-function readSettingsFromForm() {
-  return {
-    baseUrl: baseUrlInput.value,
-    model: modelInput.value,
-    apiKey: apiKeyInput.value,
-  };
-}
-
-// Settings: load once, then persist on every change. The key lives only in
-// this browser (localStorage) and is sent only to the configured service.
-const storedSettings = loadTranscriptionSettings();
-baseUrlInput.value = storedSettings.baseUrl;
-modelInput.value = storedSettings.model;
-apiKeyInput.value = storedSettings.apiKey;
-
-for (const input of [baseUrlInput, modelInput, apiKeyInput]) {
-  input.addEventListener('input', () => {
-    saveTranscriptionSettings(readSettingsFromForm());
-  });
-}
-
 function reportError(code: SessionErrorCode, rawMessage: string): void {
   if (code === 'aborted') {
     banner.showNotice('Screen capture was cancelled.');
@@ -223,14 +198,6 @@ function requireVideo(id: string): HTMLVideoElement {
   const element = document.getElementById(id);
   if (!(element instanceof HTMLVideoElement)) {
     throw new Error(`Required video #${id} is missing from index.html.`);
-  }
-  return element;
-}
-
-function requireInput(id: string): HTMLInputElement {
-  const element = document.getElementById(id);
-  if (!(element instanceof HTMLInputElement)) {
-    throw new Error(`Required input #${id} is missing from index.html.`);
   }
   return element;
 }

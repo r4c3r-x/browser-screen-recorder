@@ -1,10 +1,11 @@
-# Stage 06 — transcript (revised: online engine, SRT output)
+# Stage 06 — transcript (revision 2: offline Vosk only, no AI services)
 
-One stage, one job: transcribe the finished recording via a user-configured
-online service (BYO key) and download the result as .srt and .txt.
-Amendment note: the user redirected the engine from on-device Whisper to an
-online free-tier service and requested SRT output; this contract was
-revised before implementation continued.
+One stage, one job: transcribe the finished recording with an offline
+in-browser Kaldi engine (Vosk via vosk-browser WASM) and download the
+result as .srt and .txt. Revision history: (1) on-device Whisper draft,
+(2) online BYOK engine, (3) user directive "free only, no AI services" —
+this revision removes the online engine entirely. No keys, no accounts,
+no uploads of any kind.
 
 ## Inputs
 
@@ -16,27 +17,31 @@ revised before implementation continued.
 
 ## Process
 
-1. Branch `feature/v1-transcript`; record the engine decision in PLAN.md.
-2. Remove the unused transformers.js dependency and the worker draft; the
-   online engine needs no worker.
-3. src/transcript/wav-encoder.ts (pure): 16 kHz mono PCM to WAV bytes.
-   Rationale: uploads the audio track only (never video), universally
-   accepted, ~1.9 MB/minute so the 25 MB free-tier cap covers ~13 minutes.
-4. src/transcript/srt.ts (pure): segments to SRT (HH:MM:SS,mmm blocks) and
-   timestamped .txt.
-5. src/transcript/transcriber.ts (rewrite): OpenAI-compatible
-   /audio/transcriptions client — FormData upload, verbose_json segments,
-   AbortController cancel, typed phases. Settings (base URL, model, key)
-   persisted in localStorage under one key; key is user-supplied (BYOK),
-   never committed, sent only to the configured provider over HTTPS.
-6. src/ui/transcript-controls.ts + index.html: settings fieldset, phase
-   status, .srt/.txt download buttons, size-cap error surfaced in banner.
-7. README privacy copy updated honestly: recording stays local; optional
-   transcription sends the audio track to the chosen provider.
-8. Unit tests: WAV header/lengths, SRT timecodes/numbering, TXT format.
-   e2e: controls and states (no real key in tests). Manual: one real
-   transcription by the user.
-9. `npm run test` + `npm run build` green; README/PLAN updated.
+1. On `feature/v1-transcript`: amend PLAN.md decision log (engine = Vosk
+   offline per user directive; online engine removed).
+2. Remove the online path: transcriber.ts (HTTP client), settings-storage,
+   WAV encoder + its tests, provider constants, settings fieldset UI.
+3. Add `vosk-browser` (runtime dep, dynamically imported on first use so
+   the main bundle is unaffected).
+4. src/transcript/words-to-segments.ts (pure): vosk word list (conf, start,
+   end, word) to subtitle segments by max duration/chars/gap and sentence
+   punctuation. Unit-tested.
+5. src/transcript/vosk-transcriber.ts: lazy-import vosk-browser; cache the
+   model across runs; decode recording to 16 kHz mono PCM (existing
+   audio-decode), wrap in an AudioBuffer, feed the recognizer, collect
+   word timestamps, group into segments. Typed module declaration for the
+   library.
+6. Model URL: CORS-verified Hugging Face mirror (alphacephei.com sends no
+   CORS headers; mirror serves the identical 41.2 MB file with ACAO *).
+   Constant in config.ts; self-host fallback documented in the error copy.
+7. index.html/controls: settings fieldset replaced by an honest note
+   (offline, first-run 41 MB model download, cached); phases: loading
+   model, transcribing, done, error.
+8. Unit tests: word grouping, SRT/TXT formatters (kept), filenames.
+   e2e: transcribe click shows the loading state (no 41 MB download in
+   tests); manual verification: one real transcription in-browser.
+9. `npm run test` + `npm run build` green; README rewritten (fully
+   offline, nothing ever uploaded).
 
 ## Outputs
 
@@ -48,14 +53,15 @@ revised before implementation continued.
 
 ## Audit
 
-- [ ] No API key in code, repo, or logs; key only in localStorage, set by the user
-- [ ] Only the audio track is uploaded, over HTTPS, to the user-configured provider
-- [ ] 25 MB cap enforced with a visible, actionable error before upload
-- [ ] SRT is spec-shaped (numbered blocks, HH:MM:SS,mmm arrow lines, blank-line separated)
-- [ ] Every phase visible (settings missing, uploading, done, error); tsc clean, no `any`
-- [ ] Unit tests green; build green; README/PLAN updated
+- [ ] Zero network calls except the one-time model download (grep: single fetch/import site)
+- [ ] No keys, no accounts, no settings for providers anywhere in the UI
+- [ ] SRT is spec-shaped; grouping rules unit-tested (duration/chars/gap/sentence)
+- [ ] Main bundle unaffected by vosk (dynamic import, separate chunk)
+- [ ] Every phase visible; error copy explains first-run download and self-host fallback
+- [ ] Unit tests green; build green; tsc clean, no `any`; README/PLAN updated
 
 ## Checkpoint
 
-Browser-verified boot and states; user performs one real transcription
-(their key); report written; merge to main.
+Browser-verified pipeline (real model load; fake-media recording yields a
+graceful no-speech result); user runs one real spoken transcription; report
+written; merge to main.
