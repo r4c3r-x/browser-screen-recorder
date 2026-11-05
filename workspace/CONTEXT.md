@@ -17,6 +17,7 @@ stage contract at once.
 | 07 | playback | complete | stages/07-playback/CONTEXT.md | stages/07-playback/output/stage-report.md |
 | 08 | ui-revisions | complete | stages/08-ui-revisions/CONTEXT.md | stages/08-ui-revisions/output/stage-report.md |
 | 09 | quality | complete | stages/09-quality/CONTEXT.md | stages/09-quality/output/stage-report.md |
+| 10 | approval-gate | complete | stages/10-approval-gate/CONTEXT.md | stages/10-approval-gate/output/stage-report.md |
 
 ## How to execute a stage
 
@@ -27,6 +28,16 @@ stage contract at once.
 3. Run the Audit checklist. If any item fails, fix it before continuing.
 4. Update this routing table's Status (pending → in-progress → complete).
 5. Commit (`type: short description`), then checkpoint before the next stage.
+
+## Approved states
+
+The last state the user explicitly approved. Recovery procedure and tagging
+rules: see the "Approval and recovery checkpoints" section in AGENTS.md.
+Never tag without an explicit approval in the conversation.
+
+| Tag | Date | Commit | Approved contents |
+|---|---|---|---|
+| — | — | — | No state approved yet |
 
 ## Rules
 
