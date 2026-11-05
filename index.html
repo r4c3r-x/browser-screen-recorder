@@ -6,7 +6,40 @@
     <title>Screen Recorder</title>
   </head>
   <body>
-    <div id="app"></div>
+    <main class="app">
+      <h1>Screen Recorder</h1>
+
+      <section id="banner-region" class="banner-region" aria-live="polite"></section>
+
+      <section class="preview" aria-label="Capture preview">
+        <video id="preview" class="preview-video" muted playsinline hidden></video>
+        <p id="preview-empty" class="preview-empty">
+          The capture preview appears here once a recording starts.
+        </p>
+      </section>
+
+      <section class="status" aria-label="Recording status">
+        <span id="state-chip" class="state-chip state-idle">Idle</span>
+        <span id="elapsed" class="status-value">00:00</span>
+        <span id="size" class="status-value">0 B</span>
+        <span id="mime" class="mime-badge" hidden></span>
+      </section>
+
+      <section class="controls" aria-label="Recording controls">
+        <label class="mic-option">
+          <input type="checkbox" id="include-mic" />
+          Include microphone
+        </label>
+        <div class="button-row">
+          <button id="start" type="button" class="button button-primary">Start recording</button>
+          <button id="pause" type="button" class="button" hidden>Pause</button>
+          <button id="resume" type="button" class="button" hidden>Resume</button>
+          <button id="stop" type="button" class="button button-danger">Stop recording</button>
+          <button id="download" type="button" class="button button-primary">Download recording</button>
+          <button id="discard" type="button" class="button">Discard recording</button>
+        </div>
+      </section>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

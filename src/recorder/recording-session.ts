@@ -149,6 +149,7 @@ export function createRecordingSession(): RecordingSession {
     }, TIMER_TICK_MS);
 
     setState('recording');
+    emit({ type: 'capture-started', stream: activeCapture.stream, mimeType: format.mimeType });
     void activeCapture.ended.then(() => {
       if (state === 'recording' || state === 'paused') {
         void finishFromInterruption();
@@ -217,9 +218,13 @@ export function createRecordingSession(): RecordingSession {
     }
     cleanupResources();
     setState('finished');
-    return stopResult
+    const result: RecordingResult | null = stopResult
       ? { blob: stopResult.blob, mimeType: stopResult.mimeType, durationMs }
       : null;
+    if (result !== null) {
+      emit({ type: 'recording-complete', result });
+    }
+    return result;
   }
 
   function cleanupResources(): void {

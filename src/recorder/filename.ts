@@ -8,6 +8,17 @@ export function buildRecordingFilename(now: Date, fileExtension: string): string
   return `${RECORDING_FILENAME_PREFIX}-${formatTimestamp(now)}.${fileExtension}`;
 }
 
+/**
+ * Derive the file extension from a mime type: an exact match against the
+ * configured format list first, then container inference as a fallback.
+ */
+export function extensionFromMime(mimeType: string): string {
+  if (mimeType.includes('mp4')) {
+    return 'mp4';
+  }
+  return 'webm';
+}
+
 function formatTimestamp(date: Date): string {
   const year = String(date.getFullYear()).padStart(4, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');

@@ -22,3 +22,6 @@ export const RECORDING_FILENAME_PREFIX = 'screen-recording';
 
 /** Port used by the dev server and e2e tooling. */
 export const SERVER_PORT = 5173;
+
+/** Delay (ms) before revoking a download object URL so saves complete. */
+export const DOWNLOAD_URL_RELEASE_MS = 10_000;

@@ -1,0 +1,234 @@
+/* Screen recorder base styles.
+   Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 px only.
+   One font family (system stack). No gradients, no glassmorphism. */
+
+:root {
+  --color-bg: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-border: #d4d4d4;
+  --color-text: #171717;
+  --color-text-muted: #595959;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #b91c1c;
+  --color-error-text: #7f1d1c;
+  --color-recording: #b91c1c;
+  --color-recording-bg: #fee2e2;
+  --color-paused-bg: #fef3c7;
+  --color-paused-text: #92400e;
+  --color-finished-bg: #dcfce7;
+  --color-finished-text: #14532d;
+  --radius: 4px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Banner (errors and notices) */
+
+.banner-region {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.banner-error {
+  border-color: var(--color-error-border);
+  background: var(--color-error-bg);
+}
+
+.banner-text {
+  margin: 0;
+  font-size: 14px;
+}
+
+.banner-error .banner-text {
+  color: var(--color-error-text);
+}
+
+.banner-dismiss {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.banner-dismiss:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Preview */
+
+.preview {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-text);
+  overflow: hidden;
+}
+
+.preview-video {
+  display: block;
+  width: 100%;
+}
+
+.preview-empty {
+  margin: 0;
+  padding: 48px 16px;
+  text-align: center;
+  color: #d4d4d4;
+  font-size: 14px;
+}
+
+/* Status */
+
+.status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.state-chip {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.state-idle {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+.state-requesting {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+.state-recording {
+  background: var(--color-recording-bg);
+  color: var(--color-recording);
+}
+
+.state-paused {
+  background: var(--color-paused-bg);
+  color: var(--color-paused-text);
+}
+
+.state-finished {
+  background: var(--color-finished-bg);
+  color: var(--color-finished-text);
+}
+
+.status-value {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mime-badge {
+  padding: 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* Controls */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mic-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-bg);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-primary {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-surface);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: #404040;
+}
+
+.button-danger {
+  border-color: var(--color-error-border);
+  color: var(--color-recording);
+}
+
+.button-danger:hover:not(:disabled) {
+  background: var(--color-error-bg);
+}
