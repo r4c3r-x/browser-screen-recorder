@@ -37,8 +37,7 @@
           <button id="pause" type="button" class="button" hidden>Pause</button>
           <button id="resume" type="button" class="button" hidden>Resume</button>
           <button id="stop" type="button" class="button button-danger">Stop recording</button>
-          <button id="download" type="button" class="button button-primary">Download recording</button>
-          <button id="discard" type="button" class="button">Discard recording</button>
+          <button id="download" type="button" class="button button-primary" hidden>Download recording</button>
         </div>
         <div class="button-row">
           <button id="transcribe" type="button" class="button">Transcribe recording</button>
@@ -46,6 +45,10 @@
           <button id="download-srt" type="button" class="button" hidden>Download subtitles (.srt)</button>
         </div>
         <p id="transcript-status" class="transcript-status" hidden></p>
+        <p id="discard-hint" class="transcript-status" hidden>
+          To discard this recording, reload the page or press F5. You will be
+          asked to confirm.
+        </p>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>

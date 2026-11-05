@@ -6,7 +6,6 @@ export interface ControlHandlers {
   onResume(): void;
   onStop(): void;
   onDownload(): void;
-  onDiscard(): void;
 }
 
 export interface Controls {
@@ -23,7 +22,6 @@ export function createControls(handlers: ControlHandlers): Controls {
   const resume = requireButton('resume');
   const stop = requireButton('stop');
   const download = requireButton('download');
-  const discard = requireButton('discard');
   const includeMic = requireInput('include-mic');
   const includeCamera = requireInput('include-camera');
 
@@ -34,7 +32,6 @@ export function createControls(handlers: ControlHandlers): Controls {
   resume.addEventListener('click', () => handlers.onResume());
   stop.addEventListener('click', () => handlers.onStop());
   download.addEventListener('click', () => handlers.onDownload());
-  discard.addEventListener('click', () => handlers.onDiscard());
 
   return { update };
 
@@ -52,8 +49,8 @@ export function createControls(handlers: ControlHandlers): Controls {
     includeCamera.disabled = state !== 'idle' && state !== 'finished';
 
     const canSave = state === 'finished' && hasResult;
+    download.hidden = !canSave;
     download.disabled = !canSave;
-    discard.disabled = !canSave;
   }
 }
 

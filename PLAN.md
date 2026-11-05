@@ -24,6 +24,7 @@ Chromium-first browsers.
 - [x] 09-quality — fixed Balanced bitrate cap (1.5 Mbps video / 96 kbps audio), no UI
 - [x] 10-approval-gate — user-approved states saved as approved/vN tags, restore procedure
 - [x] 11-webcam-overlay — camera bubble composited over the capture (fail-soft, Worker-driven draws)
+- [x] 12-finish-flow — no discard button; download hidden until ready; reload (with confirm) is the discard path
 
 ## Decisions log
 
