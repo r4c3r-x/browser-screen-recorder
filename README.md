@@ -6,6 +6,8 @@ resume, live duration and size readout, in-app playback of the finished
 recording, and optional transcription into .srt subtitles and a .txt
 transcript.
 
+**Live:** https://r4c3r-x.github.io/browser-screen-recorder/
+
 Privacy: everything runs locally. Recording, encoding, and transcription
 happen entirely in your browser — nothing is ever uploaded, there are no
 accounts, and no API keys. Transcription uses an offline speech model that
@@ -82,10 +84,11 @@ page itself stays small.
 
 ## Deploy
 
-The app is fully static after `npm run build`: host the `dist/` directory on
-any static file server. It must be served over HTTPS (or localhost) because
-`getDisplayMedia` requires a secure context. No server-side component
-exists; nothing is uploaded.
+Every push to `main` deploys automatically: a GitHub Actions workflow
+builds with the Pages base path and publishes to
+https://r4c3r-x.github.io/browser-screen-recorder/. The app must be served
+over HTTPS (or localhost) because `getDisplayMedia` requires a secure
+context. No server-side component exists; nothing is uploaded.
 
 ## Project docs
 

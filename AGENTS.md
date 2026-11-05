@@ -96,7 +96,12 @@ quality standard; the ICM layers apply it.
 
 - Never commit to `main` directly. Feature branches: `feature/short-description`.
 - Commit after every working change: `type: short description`.
-- No remote is configured (local-only development); pushing is skipped until
-  the user provides one. Documented deviation from vibe-code-rules §3.
+- Remote: https://github.com/r4c3r-x/browser-screen-recorder (public).
+  Push after every commit per vibe-code-rules §3.
+- Deployment: pushing to `main` triggers the GitHub Actions workflow
+  (`.github/workflows/deploy-pages.yml`), which builds with
+  `--base=/browser-screen-recorder/` and publishes to
+  https://r4c3r-x.github.io/browser-screen-recorder/. Pages source is the
+  workflow (`build_type: workflow`) — never push a `gh-pages` branch.
 - `docs/api/` holds local copies of MDN pages this project relies on;
   consult them before guessing API behavior.

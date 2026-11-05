@@ -35,6 +35,7 @@ Chromium-first browsers.
 | 2026-11-06 | Chromium-only e2e automation | getDisplayMedia is flag-automatable in Chromium; Firefox/Safari covered by manual matrix |
 | 2026-11-06 | Transcript engine: Vosk (Kaldi) offline, in-browser | Final user directive: "free only, no AI services". Vosk via vosk-browser WASM is keyless, accountless, fully offline (classic statistical ASR, not a neural model). Supersedes the earlier online BYOK design; the online engine was removed. Model: 41 MB small US-English from a CORS-verified mirror, cached after first use |
 | 2026-11-06 | Fixed Balanced bitrate cap (1.5 Mbps video / 96 kbps audio) on all recordings | User asked about 2-minute file sizes and accepted the Balanced tradeoff (~24 MB per 2 busy minutes vs ~120 MB unconstrained). A quality selector built alongside was rejected as unrequested scope and removed; the ICM workspace now carries a binding scope rule (AGENTS.md, workspace/CONTEXT.md): questions are answered, not built |
+| 2026-11-06 | Hosted on GitHub Pages (public repo r4c3r-x/browser-screen-recorder) | User chose GitHub Pages over Firebase/ZCode Sites. Auto-deploy via Actions on push to main (base /browser-screen-recorder/); legacy gh-pages branch route errored opaquely and was replaced by the workflow build. Resolves the vibe §3 no-remote deviation: origin exists and receives every commit |
 
 ## Failure paths that must ship in v1
 
