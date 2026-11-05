@@ -117,6 +117,9 @@ test('records without microphone when mic access is denied', async ({ browser })
   await expect(page.locator('#state-chip')).toHaveText('Recording', { timeout: 10_000 });
   await expect(page.locator('.banner-notice')).toContainText('Microphone unavailable');
 
+  // Stop after the first timeslice (1 s) so the blob is guaranteed non-empty.
+  await page.waitForTimeout(1300);
+
   await page.getByRole('button', { name: 'Stop recording' }).click();
   await expect(page.locator('#state-chip')).toHaveText('Finished');
 
