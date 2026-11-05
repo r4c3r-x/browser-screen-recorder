@@ -26,7 +26,7 @@ Chromium-first browsers.
 - [x] 11-webcam-overlay — camera bubble composited over the capture (fail-soft, Worker-driven draws)
 - [x] 12-finish-flow — no discard button; download hidden until ready; reload (with confirm) is the discard path
 - [x] 13-compact-cap — Compact (600k/64k) is the default; recordings auto-stop at 30 minutes
-- [x] 14-drive-share — Share button uploads recording (+ optional private transcript) to the user's Google Drive and yields a public link
+- [x] 14-drive-share — REMOVED at user direction (OAuth client ID setup rejected); see stages/14-drive-share/
 
 ## Decisions log
 

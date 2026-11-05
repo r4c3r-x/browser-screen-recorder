@@ -45,36 +45,6 @@
           <button id="download-srt" type="button" class="button" hidden>Download subtitles (.srt)</button>
         </div>
         <p id="transcript-status" class="transcript-status" hidden></p>
-        <div class="button-row">
-          <button id="share" type="button" class="button" hidden>Share recording</button>
-          <a id="share-link" class="share-link" hidden target="_blank" rel="noopener"></a>
-        </div>
-        <div id="share-form" class="share-form" hidden>
-          <label class="setting-field">
-            Recording title
-            <input id="share-title" type="text" maxlength="80" />
-          </label>
-          <label class="mic-option">
-            <input type="checkbox" id="share-include-transcript" />
-            Also store the transcript (private, same title)
-          </label>
-          <div class="button-row">
-            <button id="share-upload" type="button" class="button button-primary">Upload to Google Drive</button>
-            <button id="share-cancel" type="button" class="button">Cancel</button>
-          </div>
-        </div>
-        <div id="drive-setup" class="share-form" hidden>
-          <label class="setting-field">
-            Google OAuth client ID
-            <input id="drive-client-id" type="text" spellcheck="false" />
-          </label>
-          <p class="transcript-note">
-            Sharing needs a one-time Google OAuth client ID (free). Create one
-            at console.cloud.google.com with this site's origin authorized,
-            then paste it here. It is stored only in this browser. See the
-            README for the exact steps.
-          </p>
-        </div>
         <p id="discard-hint" class="transcript-status" hidden>
           Reload (F5) to discard. You'll confirm first.
         </p>
