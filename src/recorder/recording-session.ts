@@ -1,4 +1,9 @@
-import { RECORDING_FORMATS, TIMER_TICK_MS } from '../config';
+import {
+  DEFAULT_QUALITY,
+  QUALITY_PRESETS,
+  RECORDING_FORMATS,
+  TIMER_TICK_MS,
+} from '../config';
 import type {
   RecordingFormat,
   RecordingResult,
@@ -110,10 +115,13 @@ export function createRecordingSession(): RecordingSession {
 
     micStream = options.includeMic ? await requestMicFailSoft() : null;
     requestedMic = options.includeMic;
-    beginRecording(format);
+    beginRecording(format, QUALITY_PRESETS[DEFAULT_QUALITY]);
   }
 
-  function beginRecording(format: RecordingFormat): void {
+  function beginRecording(
+    format: RecordingFormat,
+    bitrates: { videoBitsPerSecond: number; audioBitsPerSecond: number },
+  ): void {
     if (!capture) {
       return;
     }
@@ -135,6 +143,7 @@ export function createRecordingSession(): RecordingSession {
     recorderHandle = startRecorder(
       new MediaStream(audioTrack ? [videoTrack, audioTrack] : [videoTrack]),
       format,
+      bitrates,
       {
         onChunk: (bytes) => emit({ type: 'size-changed', bytes }),
         onError: (message) => {

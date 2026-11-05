@@ -15,6 +15,12 @@ export interface RecorderCallbacks {
   onError: (message: string) => void;
 }
 
+/** Bitrate caps applied to the recording (bits per second). */
+export interface RecorderBitrates {
+  videoBitsPerSecond: number;
+  audioBitsPerSecond: number;
+}
+
 /** Control surface for a started MediaRecorder. */
 export interface RecorderHandle {
   pause(): void;
@@ -49,13 +55,14 @@ export function chooseRecordingFormat(
 export function startRecorder(
   stream: MediaStream,
   format: RecordingFormat,
+  bitrates: RecorderBitrates,
   callbacks: RecorderCallbacks,
 ): RecorderHandle {
   const chunks: Blob[] = [];
   let accumulatedBytes = 0;
   let stopRequested = false;
 
-  const recorder = createRecorder(stream, format);
+  const recorder = createRecorder(stream, format, bitrates);
 
   recorder.addEventListener('dataavailable', (event: Event) => {
     const blobEvent = event as BlobEvent;
@@ -101,11 +108,22 @@ export function startRecorder(
  * support via isTypeSupported yet reject the exact codec string, so fall
  * back to the browser's default mime before giving up.
  */
-function createRecorder(stream: MediaStream, preferred: RecordingFormat): MediaRecorder {
+function createRecorder(
+  stream: MediaStream,
+  preferred: RecordingFormat,
+  bitrates: RecorderBitrates,
+): MediaRecorder {
   try {
-    return new MediaRecorder(stream, { mimeType: preferred.mimeType });
+    return new MediaRecorder(stream, {
+      mimeType: preferred.mimeType,
+      videoBitsPerSecond: bitrates.videoBitsPerSecond,
+      audioBitsPerSecond: bitrates.audioBitsPerSecond,
+    });
   } catch {
-    return new MediaRecorder(stream);
+    return new MediaRecorder(stream, {
+      videoBitsPerSecond: bitrates.videoBitsPerSecond,
+      audioBitsPerSecond: bitrates.audioBitsPerSecond,
+    });
   }
 }
 

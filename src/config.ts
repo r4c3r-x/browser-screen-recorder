@@ -38,6 +38,29 @@ export const VOSK_MODEL_URL =
 /** Sample rate (Hz) the Vosk model expects. */
 export const TARGET_SAMPLE_RATE_HZ = 16_000;
 
+/**
+ * Recording quality presets (video/audio bitrates in bits per second).
+ * Unconstrained, Chrome targets up to ~8 Mbps video: a busy 2-minute screen
+ * recording costs ~120 MB. Screen content stays visually clean at a fraction
+ * of that, so every preset here is a large saving:
+ *   crisp    ~62 MB / 2 min,  balanced ~24 MB / 2 min,  compact ~10 MB / 2 min
+ */
+export interface QualityPreset {
+  label: string;
+  videoBitsPerSecond: number;
+  audioBitsPerSecond: number;
+}
+
+export const QUALITY_PRESETS = {
+  compact: { label: 'Compact', videoBitsPerSecond: 600_000, audioBitsPerSecond: 64_000 },
+  balanced: { label: 'Balanced', videoBitsPerSecond: 1_500_000, audioBitsPerSecond: 96_000 },
+  crisp: { label: 'Crisp', videoBitsPerSecond: 4_000_000, audioBitsPerSecond: 128_000 },
+} as const satisfies Record<string, QualityPreset>;
+
+export const DEFAULT_QUALITY: QualityKey = 'balanced';
+
+export type QualityKey = keyof typeof QUALITY_PRESETS;
+
 /** Subtitle grouping: close a segment past this duration. */
 export const TRANSCRIPT_MAX_SEGMENT_SECONDS = 5;
 

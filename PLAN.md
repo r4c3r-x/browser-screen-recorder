@@ -21,6 +21,7 @@ Chromium-first browsers.
 - [x] 06-transcript — offline (Vosk/Kaldi, in-browser) transcription, .srt + .txt downloads
 - [x] 07-playback — in-app playback of the finished recording (native controls)
 - [x] 08-ui-revisions — transcribe gated to mic recordings, text removals, centered heading
+- [x] 09-quality — fixed Balanced bitrate cap (1.5 Mbps video / 96 kbps audio), no UI
 
 ## Decisions log
 
@@ -32,6 +33,7 @@ Chromium-first browsers.
 | 2026-11-06 | Local-only git | No remote exists; vibe §3 push rule documented as deviation until one is added |
 | 2026-11-06 | Chromium-only e2e automation | getDisplayMedia is flag-automatable in Chromium; Firefox/Safari covered by manual matrix |
 | 2026-11-06 | Transcript engine: Vosk (Kaldi) offline, in-browser | Final user directive: "free only, no AI services". Vosk via vosk-browser WASM is keyless, accountless, fully offline (classic statistical ASR, not a neural model). Supersedes the earlier online BYOK design; the online engine was removed. Model: 41 MB small US-English from a CORS-verified mirror, cached after first use |
+| 2026-11-06 | Fixed Balanced bitrate cap (1.5 Mbps video / 96 kbps audio) on all recordings | User asked about 2-minute file sizes and accepted the Balanced tradeoff (~24 MB per 2 busy minutes vs ~120 MB unconstrained). A quality selector built alongside was rejected as unrequested scope and removed; the ICM workspace now carries a binding scope rule (AGENTS.md, workspace/CONTEXT.md): questions are answered, not built |
 
 ## Failure paths that must ship in v1
 
