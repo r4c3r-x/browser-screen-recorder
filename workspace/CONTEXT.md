@@ -13,6 +13,7 @@ stage contract at once.
 | 03 | audio-mixing | complete | stages/03-audio-mixing/CONTEXT.md | stages/03-audio-mixing/output/stage-report.md |
 | 04 | ui-shell | complete | stages/04-ui-shell/CONTEXT.md | stages/04-ui-shell/output/stage-report.md |
 | 05 | integration-audit | complete | stages/05-integration-audit/CONTEXT.md | stages/05-integration-audit/output/stage-report.md |
+| 06 | transcript | complete | stages/06-transcript/CONTEXT.md | stages/06-transcript/output/stage-report.md |
 
 ## How to execute a stage
 

@@ -1,15 +1,32 @@
 import './styles/base.css';
 import { DOWNLOAD_URL_RELEASE_MS } from './config';
-import { buildRecordingFilename, extensionFromMime } from './recorder/filename';
+import {
+  buildRecordingFilename,
+  buildSrtFilename,
+  buildTranscriptFilename,
+  extensionFromMime,
+} from './recorder/filename';
 import { createRecordingSession } from './recorder/recording-session';
-import type { RecordingResult, SessionErrorCode } from './types';
+import { createTranscriber } from './transcript/transcriber';
+import { loadTranscriptionSettings, saveTranscriptionSettings } from './transcript/settings-storage';
+import { formatSrt, formatTranscript } from './transcript/srt';
+import type {
+  RecordingResult,
+  SessionErrorCode,
+  TranscriberPhase,
+  TranscriptSegment,
+} from './types';
 import { createControls } from './ui/controls';
 import { createErrorBanner } from './ui/error-banner';
 import { createStatusPanel } from './ui/status-panel';
+import { createTranscriptControls } from './ui/transcript-controls';
 
 const bannerRegion = requireElement('banner-region');
 const preview = requireVideo('preview');
 const previewEmpty = requireElement('preview-empty');
+const baseUrlInput = requireInput('transcribe-base-url');
+const modelInput = requireInput('transcribe-model');
+const apiKeyInput = requireInput('transcribe-api-key');
 
 const session = createRecordingSession();
 const banner = createErrorBanner(bannerRegion);
@@ -25,17 +42,60 @@ const controls = createControls({
   onStop: () => void session.stop(),
   onDownload: () => {
     if (lastResult) {
-      downloadResult(lastResult);
+      downloadBlob(
+        lastResult.blob,
+        buildRecordingFilename(new Date(), extensionFromMime(lastResult.mimeType)),
+      );
     }
   },
   onDiscard: () => {
     lastResult = null;
+    lastSegments = null;
+    transcriber.cancel();
     status.reset();
     refreshControls();
+    refreshTranscriptControls();
+  },
+});
+const transcriptControls = createTranscriptControls({
+  onTranscribe: () => {
+    if (lastResult) {
+      void transcriber.transcribe(lastResult.blob, readSettingsFromForm());
+    }
+  },
+  onDownloadTranscript: () => {
+    if (lastSegments) {
+      downloadBlob(
+        new Blob([formatTranscript(lastSegments)], { type: 'text/plain' }),
+        buildTranscriptFilename(new Date()),
+      );
+    }
+  },
+  onDownloadSrt: () => {
+    if (lastSegments) {
+      downloadBlob(
+        new Blob([formatSrt(lastSegments)], { type: 'application/x-subrip' }),
+        buildSrtFilename(new Date()),
+      );
+    }
   },
 });
 
 let lastResult: RecordingResult | null = null;
+let lastSegments: TranscriptSegment[] | null = null;
+let transcriptPhase: TranscriberPhase = 'idle';
+
+const transcriber = createTranscriber({
+  onPhase: (phase) => {
+    transcriptPhase = phase;
+    refreshTranscriptControls();
+  },
+  onResult: (segments) => {
+    lastSegments = segments;
+    refreshTranscriptControls();
+  },
+  onError: (message) => banner.showError(message),
+});
 
 const ERROR_COPY: Record<SessionErrorCode, string> = {
   'permission-denied':
@@ -58,6 +118,7 @@ session.subscribe((event) => {
         showPreview(false);
       }
       refreshControls();
+      refreshTranscriptControls();
       break;
     case 'elapsed-changed':
       status.setElapsed(event.elapsedMs);
@@ -73,6 +134,7 @@ session.subscribe((event) => {
     case 'recording-complete':
       lastResult = event.result;
       refreshControls();
+      refreshTranscriptControls();
       break;
     case 'notice':
       banner.showNotice(event.message);
@@ -96,6 +158,32 @@ function refreshControls(): void {
   controls.update(session.getState(), lastResult !== null);
 }
 
+function refreshTranscriptControls(): void {
+  const hasSegments = lastSegments !== null && lastSegments.length > 0;
+  transcriptControls.update(session.getState(), lastResult !== null, transcriptPhase, hasSegments);
+}
+
+function readSettingsFromForm() {
+  return {
+    baseUrl: baseUrlInput.value,
+    model: modelInput.value,
+    apiKey: apiKeyInput.value,
+  };
+}
+
+// Settings: load once, then persist on every change. The key lives only in
+// this browser (localStorage) and is sent only to the configured service.
+const storedSettings = loadTranscriptionSettings();
+baseUrlInput.value = storedSettings.baseUrl;
+modelInput.value = storedSettings.model;
+apiKeyInput.value = storedSettings.apiKey;
+
+for (const input of [baseUrlInput, modelInput, apiKeyInput]) {
+  input.addEventListener('input', () => {
+    saveTranscriptionSettings(readSettingsFromForm());
+  });
+}
+
 function reportError(code: SessionErrorCode, rawMessage: string): void {
   if (code === 'aborted') {
     banner.showNotice('Screen capture was cancelled.');
@@ -113,11 +201,11 @@ function showPreview(visible: boolean): void {
   }
 }
 
-function downloadResult(result: RecordingResult): void {
-  const url = URL.createObjectURL(result.blob);
+function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = buildRecordingFilename(new Date(), extensionFromMime(result.mimeType));
+  anchor.download = filename;
   anchor.click();
   // The download starts asynchronously; revoke late so it is not cut off.
   setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_RELEASE_MS);
@@ -139,5 +227,14 @@ function requireVideo(id: string): HTMLVideoElement {
   return element;
 }
 
+function requireInput(id: string): HTMLInputElement {
+  const element = document.getElementById(id);
+  if (!(element instanceof HTMLInputElement)) {
+    throw new Error(`Required input #${id} is missing from index.html.`);
+  }
+  return element;
+}
+
 status.reset();
 refreshControls();
+refreshTranscriptControls();

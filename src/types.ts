@@ -50,3 +50,27 @@ export type SessionEvent =
   | { type: 'notice'; message: string }
   /** Fatal for the current start attempt; session returns to a stable state. */
   | { type: 'error'; message: string; code: SessionErrorCode };
+
+/** One timed piece of transcribed speech. */
+export interface TranscriptSegment {
+  startMs: number;
+  endMs: number;
+  text: string;
+}
+
+/** Phases of a transcription run. */
+export type TranscriberPhase =
+  | 'idle'
+  | 'encoding'
+  | 'uploading'
+  | 'done'
+  | 'error';
+
+/** Where and how to transcribe. The key is user-supplied (BYOK). */
+export interface TranscriptionSettings {
+  /** OpenAI-compatible base URL, e.g. https://api.groq.com/openai/v1 */
+  baseUrl: string;
+  /** Model id, e.g. whisper-large-v3-turbo */
+  model: string;
+  apiKey: string;
+}
