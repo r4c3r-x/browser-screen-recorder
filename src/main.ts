@@ -23,7 +23,6 @@ import { createTranscriptControls } from './ui/transcript-controls';
 const bannerRegion = requireElement('banner-region');
 const preview = requireVideo('preview');
 const playback = requireVideo('playback');
-const previewEmpty = requireElement('preview-empty');
 
 const session = createRecordingSession();
 const banner = createErrorBanner(bannerRegion);
@@ -48,6 +47,7 @@ const controls = createControls({
   onDiscard: () => {
     lastResult = null;
     lastSegments = null;
+    lastMicIncluded = false;
     transcriber.cancel();
     status.reset();
     showPreviewArea('empty');
@@ -82,6 +82,7 @@ const transcriptControls = createTranscriptControls({
 let lastResult: RecordingResult | null = null;
 let lastSegments: TranscriptSegment[] | null = null;
 let transcriptPhase: TranscriberPhase = 'idle';
+let lastMicIncluded = false;
 let playbackUrl: string | null = null;
 
 const transcriber = createTranscriber({
@@ -132,6 +133,7 @@ session.subscribe((event) => {
       break;
     case 'recording-complete':
       lastResult = event.result;
+      lastMicIncluded = event.micIncluded;
       loadPlayback(event.result);
       refreshControls();
       refreshTranscriptControls();
@@ -160,7 +162,13 @@ function refreshControls(): void {
 
 function refreshTranscriptControls(): void {
   const hasSegments = lastSegments !== null && lastSegments.length > 0;
-  transcriptControls.update(session.getState(), lastResult !== null, transcriptPhase, hasSegments);
+  transcriptControls.update(
+    session.getState(),
+    lastResult !== null,
+    lastMicIncluded,
+    transcriptPhase,
+    hasSegments,
+  );
 }
 
 function reportError(code: SessionErrorCode, rawMessage: string): void {
@@ -174,13 +182,12 @@ function reportError(code: SessionErrorCode, rawMessage: string): void {
 
 /**
  * Three-state preview area: the muted live capture while recording, the
- * finished recording in a native-controls player after it, or the empty
- * hint. Exactly one state is visible at a time.
+ * finished recording in a native-controls player after it, or nothing.
+ * Exactly one state is visible at a time.
  */
 function showPreviewArea(mode: 'live' | 'playback' | 'empty'): void {
   preview.hidden = mode !== 'live';
   playback.hidden = mode !== 'playback';
-  previewEmpty.hidden = mode !== 'empty';
   if (mode !== 'live') {
     preview.srcObject = null;
   }

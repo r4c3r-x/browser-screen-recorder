@@ -54,6 +54,7 @@ export function createRecordingSession(): RecordingSession {
   let mixedAudio: ReturnType<typeof createMixedAudio> | null = null;
   let timerHandle: ReturnType<typeof setInterval> | null = null;
   const listeners = new Set<(event: SessionEvent) => void>();
+  let requestedMic = false;
 
   function emit(event: SessionEvent): void {
     for (const listener of listeners) {
@@ -108,6 +109,7 @@ export function createRecordingSession(): RecordingSession {
     }
 
     micStream = options.includeMic ? await requestMicFailSoft() : null;
+    requestedMic = options.includeMic;
     beginRecording(format);
   }
 
@@ -222,7 +224,7 @@ export function createRecordingSession(): RecordingSession {
       ? { blob: stopResult.blob, mimeType: stopResult.mimeType, durationMs }
       : null;
     if (result !== null) {
-      emit({ type: 'recording-complete', result });
+      emit({ type: 'recording-complete', result, micIncluded: requestedMic });
     }
     return result;
   }
