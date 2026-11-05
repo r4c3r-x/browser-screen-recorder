@@ -14,10 +14,10 @@ Chromium-first browsers.
 ## v1 scope (build order)
 
 - [x] 01-foundation — tooling scaffold, ICM workspace, local API docs
-- [ ] 02-capture-engine — display capture + MediaRecorder core, pure logic + unit tests
-- [ ] 03-audio-mixing — mic + system audio mixing, session state machine, fail-soft mic
-- [ ] 04-ui-shell — controls, status panel, error banner, live preview, styles
-- [ ] 05-integration-audit — e2e test, failure-path matrix, docs finalization, merge to main
+- [x] 02-capture-engine — display capture + MediaRecorder core, pure logic + unit tests
+- [x] 03-audio-mixing — mic + system audio mixing, session state machine, fail-soft mic
+- [x] 04-ui-shell — controls, status panel, error banner, live preview, styles
+- [x] 05-integration-audit — e2e test, failure-path matrix, docs finalization, merge to main
 
 ## Decisions log
 

@@ -12,7 +12,7 @@ stage contract at once.
 | 02 | capture-engine | complete | stages/02-capture-engine/CONTEXT.md | stages/02-capture-engine/output/stage-report.md |
 | 03 | audio-mixing | complete | stages/03-audio-mixing/CONTEXT.md | stages/03-audio-mixing/output/stage-report.md |
 | 04 | ui-shell | complete | stages/04-ui-shell/CONTEXT.md | stages/04-ui-shell/output/stage-report.md |
-| 05 | integration-audit | in-progress | stages/05-integration-audit/CONTEXT.md | — |
+| 05 | integration-audit | complete | stages/05-integration-audit/CONTEXT.md | stages/05-integration-audit/output/stage-report.md |
 
 ## How to execute a stage
 

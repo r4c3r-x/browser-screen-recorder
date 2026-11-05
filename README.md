@@ -7,7 +7,9 @@ encoding happen entirely in your browser.
 
 ## Status
 
-v1 in progress. Current stage and status: see [workspace/CONTEXT.md](workspace/CONTEXT.md).
+v1 complete. Build stages and their reports live in
+[workspace/CONTEXT.md](workspace/CONTEXT.md) (Interpretable Context
+Methodology: the filesystem is the project's status and history).
 
 ## Requirements
 
@@ -34,12 +36,13 @@ npm run preview   # serve the production build
 ## Test
 
 ```
-npm run test        # unit tests
-npm run test:e2e    # browser end-to-end (chromium)
+npm run test        # 32 unit tests (pure logic)
+npm run test:e2e    # 3 browser end-to-end tests (chromium, fake media)
 ```
 
-These scripts appear as their stages land: unit tests in stage 02, e2e in
-stage 05.
+The e2e suite runs Chromium with fake media streams and an auto-selected
+capture source, so it needs no interaction. First run installs the browser
+binary (`npx playwright install chromium`, ~130 MB).
 
 ## How it works
 
@@ -48,6 +51,13 @@ and (optionally) the microphone into one track; `MediaRecorder` encodes to
 WebM, falling back to MP4 where WebM is unavailable. The mime type is
 negotiated at runtime from a preference list, and the download filename is
 derived from the chosen format.
+
+## Deploy
+
+The app is fully static after `npm run build`: host the `dist/` directory on
+any static file server. It must be served over HTTPS (or localhost) because
+`getDisplayMedia` requires a secure context. No server-side component
+exists; nothing is uploaded.
 
 ## Project docs
 
