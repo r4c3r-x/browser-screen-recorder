@@ -37,7 +37,7 @@ Never tag without an explicit approval in the conversation.
 
 | Tag | Date | Commit | Approved contents |
 |---|---|---|---|
-| — | — | — | No state approved yet |
+| approved/v1 | 2026-11-06 | f3b5f9e | v1 feature set: screen/window/tab recording with mic + system audio, pause/resume, in-app playback, offline Vosk transcription to .srt/.txt (mic-gated), fixed Balanced bitrate (1.5 Mbps video / 96 kbps audio), minimal centered UI, nothing uploaded. Verified: 47/47 unit, 3/3 e2e, clean build. Stages 01-10 complete |
 
 ## Rules
 
