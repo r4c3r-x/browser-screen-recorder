@@ -14,6 +14,9 @@ export const RECORDING_FORMATS: readonly RecordingFormat[] = [
 /** Interval (ms) at which MediaRecorder emits chunks for size tracking. */
 export const RECORDER_TIMESLICE_MS = 1000;
 
+/** Interval (ms) between elapsed-timer UI updates. */
+export const TIMER_TICK_MS = 250;
+
 /** Prefix for downloaded recording files. */
 export const RECORDING_FILENAME_PREFIX = 'screen-recording';
 

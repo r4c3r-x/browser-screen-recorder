@@ -27,3 +27,22 @@ export interface RecordingFormat {
   mimeType: string;
   fileExtension: string;
 }
+
+/** Stable codes the UI maps to user-facing copy. */
+export type SessionErrorCode =
+  | 'permission-denied'
+  | 'no-source'
+  | 'source-unreadable'
+  | 'aborted'
+  | 'no-format'
+  | 'unknown';
+
+/** Events emitted by a RecordingSession for the UI. */
+export type SessionEvent =
+  | { type: 'state-changed'; state: RecordingState }
+  | { type: 'elapsed-changed'; elapsedMs: number }
+  | { type: 'size-changed'; bytes: number }
+  /** Non-fatal: recording continues (e.g. mic unavailable). */
+  | { type: 'notice'; message: string }
+  /** Fatal for the current start attempt; session returns to a stable state. */
+  | { type: 'error'; message: string; code: SessionErrorCode };
