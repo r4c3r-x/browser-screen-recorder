@@ -1,0 +1,16 @@
+{
+  "name": "browser-screen-recorder",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Browser-based screen recording tool: captures screen with optional mic/system audio via getDisplayMedia and MediaRecorder. No uploads; everything runs locally.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6"
+  }
+}
