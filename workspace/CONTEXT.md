@@ -20,6 +20,7 @@ stage contract at once.
 | 10 | approval-gate | complete | stages/10-approval-gate/CONTEXT.md | stages/10-approval-gate/output/stage-report.md |
 | 11 | webcam-overlay | complete | stages/11-webcam-overlay/CONTEXT.md | stages/11-webcam-overlay/output/stage-report.md |
 | 12 | finish-flow | complete | stages/12-finish-flow/CONTEXT.md | stages/12-finish-flow/output/stage-report.md |
+| 13 | compact-cap | complete | stages/13-compact-cap/CONTEXT.md | stages/13-compact-cap/output/stage-report.md |
 
 ## How to execute a stage
 

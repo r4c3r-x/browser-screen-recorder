@@ -57,7 +57,10 @@ export const QUALITY_PRESETS = {
   crisp: { label: 'Crisp', videoBitsPerSecond: 4_000_000, audioBitsPerSecond: 128_000 },
 } as const satisfies Record<string, QualityPreset>;
 
-export const DEFAULT_QUALITY: QualityKey = 'balanced';
+export const DEFAULT_QUALITY: QualityKey = 'compact';
+
+/** Hard cap on recording length (ms): the session auto-stops here. */
+export const MAX_RECORDING_MS = 1_800_000;
 
 export type QualityKey = keyof typeof QUALITY_PRESETS;
 
