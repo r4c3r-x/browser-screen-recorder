@@ -6,10 +6,14 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   const startButton = page.getByRole('button', { name: 'Start recording' });
   await expect(startButton).toBeEnabled();
 
+  // Idle state shows no status bar: it would only read "Idle / 00:00 / 0 B".
+  await expect(page.locator('#status')).toBeHidden();
+
   await startButton.click();
 
   const chip = page.locator('#state-chip');
   await expect(chip).toHaveText('Recording', { timeout: 10_000 });
+  await expect(page.locator('#status')).toBeVisible();
   await expect(page.locator('#preview')).toBeVisible();
   await expect(page.locator('#mime')).toBeVisible();
 
