@@ -9,8 +9,8 @@ stage contract at once.
 | Stage | Name | Status | Contract | Latest report |
 |---|---|---|---|---|
 | 01 | foundation | complete | stages/01-foundation/CONTEXT.md | stages/01-foundation/output/stage-report.md |
-| 02 | capture-engine | in-progress | stages/02-capture-engine/CONTEXT.md | — |
-| 03 | audio-mixing | pending | stages/03-audio-mixing/CONTEXT.md | — |
+| 02 | capture-engine | complete | stages/02-capture-engine/CONTEXT.md | stages/02-capture-engine/output/stage-report.md |
+| 03 | audio-mixing | in-progress | stages/03-audio-mixing/CONTEXT.md | — |
 | 04 | ui-shell | pending | stages/04-ui-shell/CONTEXT.md | — |
 | 05 | integration-audit | pending | stages/05-integration-audit/CONTEXT.md | — |
 
