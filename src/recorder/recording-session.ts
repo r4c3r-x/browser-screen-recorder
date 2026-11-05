@@ -1,5 +1,6 @@
 import {
   DEFAULT_QUALITY,
+  MAX_RECORDING_MS,
   QUALITY_PRESETS,
   RECORDING_FORMATS,
   TIMER_TICK_MS,
@@ -182,9 +183,16 @@ export function createRecordingSession(): RecordingSession {
     );
 
     timerHandle = setInterval(() => {
-      if (tracker) {
-        emit({ type: 'elapsed-changed', elapsedMs: tracker.elapsedMs(Date.now()) });
+      if (!tracker) {
+        return;
       }
+      const elapsedMs = tracker.elapsedMs(Date.now());
+      if (elapsedMs >= MAX_RECORDING_MS) {
+        emit({ type: 'notice', message: 'Recording stopped at the 30-minute limit.' });
+        void finishFromInterruption();
+        return;
+      }
+      emit({ type: 'elapsed-changed', elapsedMs });
     }, TIMER_TICK_MS);
 
     setState('recording');

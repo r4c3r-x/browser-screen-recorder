@@ -25,6 +25,7 @@ Chromium-first browsers.
 - [x] 10-approval-gate — user-approved states saved as approved/vN tags, restore procedure
 - [x] 11-webcam-overlay — camera bubble composited over the capture (fail-soft, Worker-driven draws)
 - [x] 12-finish-flow — no discard button; download hidden until ready; reload (with confirm) is the discard path
+- [x] 13-compact-cap — Compact (600k/64k) is the default; recordings auto-stop at 30 minutes
 
 ## Decisions log
 
@@ -38,6 +39,7 @@ Chromium-first browsers.
 | 2026-11-06 | Transcript engine: Vosk (Kaldi) offline, in-browser | Final user directive: "free only, no AI services". Vosk via vosk-browser WASM is keyless, accountless, fully offline (classic statistical ASR, not a neural model). Supersedes the earlier online BYOK design; the online engine was removed. Model: 41 MB small US-English from a CORS-verified mirror, cached after first use |
 | 2026-11-06 | Fixed Balanced bitrate cap (1.5 Mbps video / 96 kbps audio) on all recordings | User asked about 2-minute file sizes and accepted the Balanced tradeoff (~24 MB per 2 busy minutes vs ~120 MB unconstrained). A quality selector built alongside was rejected as unrequested scope and removed; the ICM workspace now carries a binding scope rule (AGENTS.md, workspace/CONTEXT.md): questions are answered, not built |
 | 2026-11-06 | Hosted on GitHub Pages (public repo r4c3r-x/browser-screen-recorder) | User chose GitHub Pages over Firebase/ZCode Sites. Auto-deploy via Actions on push to main (base /browser-screen-recorder/); legacy gh-pages branch route errored opaquely and was replaced by the workflow build. Resolves the vibe §3 no-remote deviation: origin exists and receives every commit |
+| 2026-11-06 | Compact (600k/64k) is the default quality; recordings cap at 30 minutes | User compared the Compact preview against Balanced and chose Compact; a 30-minute auto-stop bounds memory (~150 MB max file). Approved states v1-v3 used Balanced without a cap |
 
 ## Failure paths that must ship in v1
 
