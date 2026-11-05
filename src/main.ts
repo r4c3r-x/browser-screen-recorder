@@ -21,6 +21,7 @@ import { createStatusPanel } from './ui/status-panel';
 import { createTranscriptControls } from './ui/transcript-controls';
 
 const bannerRegion = requireElement('banner-region');
+const statusRegion = requireElement('status');
 const preview = requireVideo('preview');
 const playback = requireVideo('playback');
 
@@ -114,6 +115,9 @@ session.subscribe((event) => {
   switch (event.type) {
     case 'state-changed':
       status.setState(event.state);
+      // The bar only carries real information once a recording is underway;
+      // an idle "Idle / 00:00 / 0 B" row is noise.
+      statusRegion.hidden = event.state === 'idle';
       if (event.state === 'finished' && !lastResult) {
         showPreviewArea('empty');
       }
@@ -234,6 +238,7 @@ function requireVideo(id: string): HTMLVideoElement {
   return element;
 }
 
+statusRegion.hidden = true; // boot state is idle: nothing to report yet
 status.reset();
 refreshControls();
 refreshTranscriptControls();
