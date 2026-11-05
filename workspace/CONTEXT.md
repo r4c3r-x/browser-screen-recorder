@@ -41,6 +41,7 @@ Never tag without an explicit approval in the conversation.
 |---|---|---|---|
 | approved/v1 | 2026-11-06 | f3b5f9e | v1 feature set: screen/window/tab recording with mic + system audio, pause/resume, in-app playback, offline Vosk transcription to .srt/.txt (mic-gated), fixed Balanced bitrate (1.5 Mbps video / 96 kbps audio), minimal centered UI, nothing uploaded. Verified: 47/47 unit, 3/3 e2e, clean build. Stages 01-10 complete |
 | approved/v2 | 2026-11-06 | 334cbcd | Identical app to v1 (no app-code changes) plus deployment: GitHub Pages hosting at https://r4c3r-x.github.io/browser-screen-recorder/ with Actions auto-deploy on push to main, remote origin configured, docs updated. Verified live: page, bundle, and vosk chunk all serve 200 |
+| approved/v3 | 2026-11-06 | 2024f39 | v2 plus webcam overlay (camera bubble composited into the recording, fail-soft, Worker-driven draws) and the revised finish flow: no discard button, download hidden until a recording is ready, discarding = reload with a browser confirm. Verified: 50/50 unit, 3/3 e2e, clean build, live site auto-deployed |
 
 ## Rules
 
