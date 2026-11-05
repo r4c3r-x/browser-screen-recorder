@@ -5,11 +5,10 @@ downloads the file. Optional microphone and system-audio capture, pause and
 resume, live duration and size readout, and optional transcription of the
 finished recording into .srt subtitles and a .txt transcript.
 
-Privacy: recording, capture, and encoding happen entirely in your browser —
-the recording itself is never uploaded. Transcription is optional and uses
-your own API key (BYOK): when you run it, the recording's audio track (never
-the video) is sent over HTTPS to the service you configure. The key is
-stored only in your browser.
+Privacy: everything runs locally. Recording, encoding, and transcription
+happen entirely in your browser — nothing is ever uploaded, there are no
+accounts, and no API keys. Transcription uses an offline speech model that
+the browser downloads once and caches.
 
 ## Status
 
@@ -52,16 +51,19 @@ binary (`npx playwright install chromium`, ~130 MB).
 
 ## Transcription
 
-1. Get a free API key at [console.groq.com](https://console.groq.com) (no
-   credit card; other OpenAI-compatible providers work too).
-2. Open "Transcription settings" in the app, paste the key (the Groq URL
-   and model are prefilled), then record.
-3. After stopping, press "Transcribe recording". When it finishes, download
-   the .srt subtitles or the .txt transcript.
+1. Record something with speech (tick "Include microphone", or share a tab
+   with audio).
+2. After stopping, press "Transcribe recording". The first run downloads
+   the offline speech model (~41 MB, US English) and caches it; later runs
+   start instantly.
+3. When it finishes, download the .srt subtitles or the .txt transcript.
 
-The default service is Groq's free tier (whisper-large-v3-turbo): about
-8 hours of audio per day, 25 MB per file (roughly 12 minutes of audio per
-recording — longer files are rejected with a clear message before upload).
+The engine is [Vosk](https://alphacephei.com/vosk) (Kaldi) running as
+WebAssembly inside the page: free, open-source, no account, no key, and no
+audio ever leaves the machine. Accuracy is decent for clear close-mic
+speech; expect weaker results on noisy or distant audio. The model URL
+lives in `src/config.ts` (a CORS-enabled mirror of the official model;
+self-hosting instructions are in the same file).
 
 ## How it works
 
@@ -71,10 +73,11 @@ WebM, falling back to MP4 where WebM is unavailable. The mime type is
 negotiated at runtime from a preference list, and the download filename is
 derived from the chosen format.
 
-Transcription decodes the recording's audio to 16 kHz mono PCM locally,
-wraps it in a WAV file, and uploads that single audio file to an
-OpenAI-compatible `/audio/transcriptions` endpoint. Returned segments are
-rendered locally into .srt and .txt downloads.
+Transcription decodes the recording's audio to 16 kHz mono PCM locally and
+feeds it to the Vosk recognizer (WebAssembly). Word-level timestamps are
+grouped into subtitle-sized segments and rendered locally into .srt and
+.txt downloads. The 5.8 MB recognizer chunk loads lazily on first use; the
+page itself stays small.
 
 ## Deploy
 

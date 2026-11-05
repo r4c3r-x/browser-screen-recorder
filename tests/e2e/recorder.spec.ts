@@ -49,13 +49,14 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   const filePath = await download.path();
   expect(fs.statSync(filePath).size).toBeGreaterThan(0);
 
-  // Transcription controls: enabled after finish, blocked without a key.
+  // Transcription controls: enabled after finish; clicking shows the
+  // offline-model loading state (the 41 MB model download is not awaited
+  // in tests).
   const transcribeButton = page.getByRole('button', { name: 'Transcribe recording' });
   await expect(transcribeButton).toBeEnabled();
-  await expect(page.locator('#transcribe-base-url')).toHaveValue(/groq\.com/);
   await transcribeButton.click();
-  await expect(page.getByRole('alert')).toContainText('API key');
-  await page.getByRole('alert').getByRole('button', { name: 'Dismiss' }).click();
+  await expect(page.locator('#transcript-status')).toBeVisible();
+  await expect(page.locator('#transcript-status')).toContainText('model');
 
   // Discard re-locks the save controls and resets the transcript state.
   await page.getByRole('button', { name: 'Discard recording' }).click();

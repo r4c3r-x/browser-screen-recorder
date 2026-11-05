@@ -1,59 +1,67 @@
-# Stage 06 report — transcript (online engine, SRT output)
+# Stage 06 report — transcript (revision 2: offline Vosk, no AI services)
 
 Date: 2026-11-06. Branch: `feature/v1-transcript`.
 
+## Revision history (user-directed)
+
+1. Initial: on-device Whisper draft (transformers.js worker).
+2. Revised: online BYOK transcription (OpenAI-compatible endpoint, SRT+TXT).
+3. Final directive: "free ones only, no AI" — the online engine was removed
+   entirely and replaced with Vosk (Kaldi) running offline in the browser.
+   No keys, no accounts, no uploads of any kind.
+
 ## What exists
 
-- Online transcription via an OpenAI-compatible `/audio/transcriptions`
-  endpoint. Default preset: Groq free tier (`whisper-large-v3-turbo`, no
-  credit card, ~8 h audio/day, 25 MB/file). Settings (URL, model, key) live
-  in "Transcription settings"; persisted to localStorage; BYOK — no key in
-  code, repo, or logs (audit-grepped).
-- Only the recording's **audio track** is uploaded: decoded locally to
-  16 kHz mono PCM, wrapped as WAV (~1.9 MB/min). Video never leaves the
-  browser. Files above the 25 MB cap are rejected with an actionable
-  message before any upload.
-- Downloads: **.srt** (numbered blocks, HH:MM:SS,mmm) and **.txt**
-  (timestamped lines). Pure formatters, unit-tested.
-- Fail-soft paths: missing key/URL/model validated before upload with
-  specific copy; provider errors mapped (401 key, 413 size, 429 rate limit);
-  cancel via AbortController when the recording is discarded mid-run.
-- Removed: the on-device Whisper draft (worker + transformers.js dep) after
-  the user redirected the engine to an online service; uninstall verified.
-
-## Contract amendment
-
-The user's request ("srt generator engine online, hopefully free") revised
-the stage contract before implementation continued: engine on-device →
-online BYOK; output txt → srt + txt. Recorded in the contract header and in
-PLAN.md's decisions log.
+- `src/transcript/vosk-transcriber.ts` — lazily imports vosk-browser (its
+  5.8 MB wasm chunk is code-split away from the 18 kB main bundle), caches
+  the 41 MB US-English model across runs, decodes the recording to 16 kHz
+  mono PCM (existing audio-decode), feeds `acceptWaveformFloat`, collects
+  word timestamps, and cancels cleanly (recognizer removed, run invalidated).
+- `src/transcript/words-to-segments.ts` — pure grouping of recognized words
+  into subtitle segments by max duration (5 s), char budget (84), speaker
+  gap (1.5 s), and sentence-ending punctuation. Unit-tested.
+- SRT/TXT formatters and download buttons unchanged from revision 2.
+- Model URL: CORS-verified Hugging Face mirror of
+  `vosk-model-small-en-us-0.15` (alphacephei.com sends no CORS headers;
+  mirror serves the identical 41,205,931-byte file with ACAO *).
+  Self-host fallback documented at the constant in config.ts.
+- UI: the provider settings fieldset is gone, replaced by an honest note
+  (offline, first-run 41 MB model, nothing uploaded).
 
 ## Evidence
 
-- `npm run test`: 42/42 (8 files) — WAV header/samples/clamping, SRT
-  timecodes/numbering, transcript format, filenames, plus all prior suites.
-- `npm run build`: exits 0; bundle 18.05 kB raw / 6.75 kB gzip (no model
-  code; the on-device worker chunk is gone entirely).
-- `npm run test:e2e`: 3/3 — including new assertions: transcribe enabled
-  after finish, Groq URL prefilled, missing-key run shows an actionable
-  error banner, discard resets transcript controls.
-- Audit greps: no hardcoded keys (`api[_-]?key:` patterns), no
-  transformers/worker leftovers, single fetch site (user-configured URL).
+- **Real-browser pipeline verification** (`scripts/verify-vosk-pipeline.mjs`,
+  one-off, not in the suite): fresh Chromium with fake media — record 3 s →
+  stop → Transcribe → model downloaded and unpacked, Kaldi initialized
+  (i-vector, HCLr/Gr, word boundaries logged), final result handled:
+  status reached "No speech detected in this recording." with session
+  Finished. That is the correct terminal state for the tone that fake media
+  produces, and it proves download → wasm → inference → result → UI.
+- `npm run test`: 45/45 (word grouping, SRT timecodes, filenames, all prior
+  suites). `npm run build`: clean; `vosk` chunk 5,785.93 kB (2,384 kB gzip)
+  split from the 18.08 kB main bundle. `npm run test:e2e`: 3/3 after one
+  load-induced flake (see notes).
 
-## Notes and deviations
+## Debugging record (vibe §6)
 
-- **Strict-mode fixes during the stage** (`noUncheckedIndexedAccess`):
-  indexed reads in audio averaging, WAV sample writing, and the settings
-  storage guard needed `?? 0` fallbacks / a precise type predicate.
-- **vitest.config.ts added**: vitest's default glob had begun collecting
-  the Playwright `.spec.ts` file; include is now unit-only.
-- **A real end-to-end transcription needs a user key** and is therefore
-  listed as manual verification: paste a free Groq key, transcribe a short
-  recording, check the .srt opens in a player. Everything short of the
-  provider round-trip is machine-verified.
-- 25 MB WAV cap means ~12 minutes per transcription on Groq free; lifting
-  it (audio-only opus side-track) is deferred with the other v2 items.
+- First verification run failed with `words is not iterable`. Traced
+  through the base64-embedded worker source in vosk.js: the worker posts
+  `JSON.parse(wasm.FinalResult())` verbatim. Fake media produces no speech,
+  so Kaldi returned `{ text: "" }` with no `result` key; my resolve passed
+  `undefined` into the grouper's `for...of`. Fix: default the missing
+  array to `[]` (`message.result.result ?? []`). One line; rerun PASS.
+- e2e full run had one failure of the mic-denied test that passed in
+  isolation and on full rerun — load-induced flake right after test 1's
+  aborted 41 MB fetch. No code change; noted for future CI stability work.
+
+## Manual verification remaining (user)
+
+One real spoken transcription: record yourself speaking via mic, press
+Transcribe, check the .srt in a player. Everything except human speech is
+machine-verified. The user's browser will download the model once.
 
 ## Audit results
 
-All six checklist items pass.
+All six checklist items pass (single network site = model URL only; no
+keys/accounts/provider settings; SRT shape tested; main bundle unaffected;
+phase/error copy complete; tests+build green; README/PLAN updated).

@@ -44,27 +44,11 @@
           <button id="download-srt" type="button" class="button" hidden>Download subtitles (.srt)</button>
         </div>
         <p id="transcript-status" class="transcript-status" hidden></p>
-        <details class="transcript-settings">
-          <summary>Transcription settings</summary>
-          <label class="setting-field">
-            Service URL
-            <input id="transcribe-base-url" type="url" spellcheck="false" />
-          </label>
-          <label class="setting-field">
-            Model
-            <input id="transcribe-model" type="text" spellcheck="false" />
-          </label>
-          <label class="setting-field">
-            API key
-            <input id="transcribe-api-key" type="password" autocomplete="off" />
-          </label>
-          <p class="transcript-note">
-            The key is stored only in this browser and sent only to the
-            service above. A free key (no card) is available at
-            console.groq.com. Transcription uploads the recording's audio
-            track, never the video.
-          </p>
-        </details>
+        <p class="transcript-note">
+          Transcription runs entirely in this browser with an offline speech
+          model (US English). The first run downloads the 41 MB model once
+          and caches it. Nothing is uploaded; no account or key is needed.
+        </p>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>

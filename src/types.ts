@@ -61,16 +61,7 @@ export interface TranscriptSegment {
 /** Phases of a transcription run. */
 export type TranscriberPhase =
   | 'idle'
-  | 'encoding'
-  | 'uploading'
+  | 'loading-model'
+  | 'transcribing'
   | 'done'
   | 'error';
-
-/** Where and how to transcribe. The key is user-supplied (BYOK). */
-export interface TranscriptionSettings {
-  /** OpenAI-compatible base URL, e.g. https://api.groq.com/openai/v1 */
-  baseUrl: string;
-  /** Model id, e.g. whisper-large-v3-turbo */
-  model: string;
-  apiKey: string;
-}
