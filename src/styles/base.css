@@ -188,6 +188,39 @@ h1 {
   text-align: center;
 }
 
+.share-form {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.setting-field input[type='text'] {
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text);
+}
+
+.share-link {
+  align-self: center;
+  font-size: 13px;
+  color: var(--color-text);
+}
+
 .mic-option {
   display: flex;
   align-items: center;
