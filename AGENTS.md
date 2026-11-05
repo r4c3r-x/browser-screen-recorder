@@ -41,6 +41,22 @@ quality standard; the ICM layers apply it.
 - `npm run test` — unit tests (vitest)
 - `npm run test:e2e` — browser e2e (playwright, chromium)
 
+## Approval and recovery checkpoints
+
+- After work is committed and merged to `main`, ask the user to approve the
+  current version. Never create an `approved/*` tag without an explicit
+  user approval in the conversation.
+- On approval: update the "Approved states" table in
+  `workspace/CONTEXT.md`, commit that record
+  (`docs: record approved state approved/vN`), then create an annotated tag
+  on that commit (`approved/vN`, N increments) whose message lists what the
+  user approved. The tag therefore contains its own receipt.
+- Recovery prefers rolling **forward**: `git revert` the unwanted commits.
+  Rolling **back** (`git checkout main && git reset --hard approved/vN`)
+  discards later commits and happens only on an explicit user instruction.
+- If fixes fail repeatedly, the last approved tag is the fallback state
+  referenced by vibe-code-rules §3 and §6.
+
 ## Scope discipline (binding — overrides any default behavior)
 
 - Implement only what the user explicitly asked for. If the user's message

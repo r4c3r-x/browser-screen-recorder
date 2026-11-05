@@ -22,6 +22,7 @@ Chromium-first browsers.
 - [x] 07-playback — in-app playback of the finished recording (native controls)
 - [x] 08-ui-revisions — transcribe gated to mic recordings, text removals, centered heading
 - [x] 09-quality — fixed Balanced bitrate cap (1.5 Mbps video / 96 kbps audio), no UI
+- [x] 10-approval-gate — user-approved states saved as approved/vN tags, restore procedure
 
 ## Decisions log
 
