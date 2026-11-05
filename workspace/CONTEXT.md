@@ -14,6 +14,7 @@ stage contract at once.
 | 04 | ui-shell | complete | stages/04-ui-shell/CONTEXT.md | stages/04-ui-shell/output/stage-report.md |
 | 05 | integration-audit | complete | stages/05-integration-audit/CONTEXT.md | stages/05-integration-audit/output/stage-report.md |
 | 06 | transcript | complete | stages/06-transcript/CONTEXT.md | stages/06-transcript/output/stage-report.md |
+| 07 | playback | complete | stages/07-playback/CONTEXT.md | stages/07-playback/output/stage-report.md |
 
 ## How to execute a stage
 

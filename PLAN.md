@@ -19,6 +19,7 @@ Chromium-first browsers.
 - [x] 04-ui-shell — controls, status panel, error banner, live preview, styles
 - [x] 05-integration-audit — e2e test, failure-path matrix, docs finalization, merge to main
 - [x] 06-transcript — offline (Vosk/Kaldi, in-browser) transcription, .srt + .txt downloads
+- [x] 07-playback — in-app playback of the finished recording (native controls)
 
 ## Decisions log
 
