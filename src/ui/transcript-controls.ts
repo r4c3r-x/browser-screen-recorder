@@ -9,11 +9,14 @@ export interface TranscriptControlHandlers {
 export interface TranscriptControls {
   /**
    * Sync transcript controls with session state, whether a recording is
-   * waiting, the transcriber phase, and whether segments exist.
+   * waiting, whether it was made with the microphone, the transcriber
+   * phase, and whether segments exist. The whole block stays hidden for
+   * mic-less recordings.
    */
   update(
     state: RecordingState,
     hasResult: boolean,
+    micIncluded: boolean,
     phase: TranscriberPhase,
     hasSegments: boolean,
   ): void;
@@ -34,23 +37,30 @@ export function createTranscriptControls(handlers: TranscriptControlHandlers): T
   function update(
     state: RecordingState,
     hasResult: boolean,
+    micIncluded: boolean,
     phase: TranscriberPhase,
     hasSegments: boolean,
   ): void {
+    if (!micIncluded) {
+      transcribe.hidden = true;
+      downloadTranscript.hidden = true;
+      downloadSrt.hidden = true;
+      status.hidden = true;
+      status.textContent = '';
+      return;
+    }
+
     const busy = phase === 'loading-model' || phase === 'transcribing';
+    transcribe.hidden = false;
     transcribe.disabled = !(state === 'finished' && hasResult && !busy);
 
     const canSave = phase === 'done' && hasSegments;
     downloadTranscript.hidden = !canSave;
     downloadSrt.hidden = !canSave;
 
-    if (phase === 'idle') {
-      status.hidden = true;
-      status.textContent = '';
-      return;
-    }
-    status.hidden = false;
-    status.textContent = statusTextFor(phase, hasSegments);
+    const text = statusTextFor(phase, hasSegments);
+    status.hidden = text === '';
+    status.textContent = text;
   }
 
   function statusTextFor(phase: TranscriberPhase, hasSegments: boolean): string {
@@ -60,7 +70,8 @@ export function createTranscriptControls(handlers: TranscriptControlHandlers): T
       case 'transcribing':
         return 'Transcribing…';
       case 'done':
-        return hasSegments ? 'Transcript ready.' : 'No speech detected in this recording.';
+        // Success is signaled by the download buttons appearing.
+        return hasSegments ? '' : 'No speech detected in this recording.';
       case 'error':
         return 'Transcription failed.';
       case 'idle':

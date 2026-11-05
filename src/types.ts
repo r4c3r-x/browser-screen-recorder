@@ -45,7 +45,7 @@ export type SessionEvent =
   /** Capture is live; the UI may preview this stream. */
   | { type: 'capture-started'; stream: MediaStream; mimeType: string }
   /** A recording finished (user stop or share end); blob is ready. */
-  | { type: 'recording-complete'; result: RecordingResult }
+  | { type: 'recording-complete'; result: RecordingResult; micIncluded: boolean }
   /** Non-fatal: recording continues (e.g. mic unavailable). */
   | { type: 'notice'; message: string }
   /** Fatal for the current start attempt; session returns to a stable state. */

@@ -15,6 +15,7 @@ stage contract at once.
 | 05 | integration-audit | complete | stages/05-integration-audit/CONTEXT.md | stages/05-integration-audit/output/stage-report.md |
 | 06 | transcript | complete | stages/06-transcript/CONTEXT.md | stages/06-transcript/output/stage-report.md |
 | 07 | playback | complete | stages/07-playback/CONTEXT.md | stages/07-playback/output/stage-report.md |
+| 08 | ui-revisions | complete | stages/08-ui-revisions/CONTEXT.md | stages/08-ui-revisions/output/stage-report.md |
 
 ## How to execute a stage
 

@@ -50,6 +50,7 @@ h1 {
   font-size: 20px;
   font-weight: 600;
   margin: 0;
+  text-align: center;
 }
 
 /* Banner (errors and notices) */
@@ -112,14 +113,6 @@ h1 {
   width: 100%;
   background: var(--color-text);
   border-radius: var(--radius);
-}
-
-.preview-empty {
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 14px;
 }
 
 /* Status */
@@ -189,12 +182,6 @@ h1 {
 }
 
 .transcript-status {
-  margin: 0;
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.transcript-note {
   margin: 0;
   font-size: 12px;
   color: var(--color-text-muted);

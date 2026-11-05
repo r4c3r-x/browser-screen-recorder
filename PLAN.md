@@ -20,6 +20,7 @@ Chromium-first browsers.
 - [x] 05-integration-audit — e2e test, failure-path matrix, docs finalization, merge to main
 - [x] 06-transcript — offline (Vosk/Kaldi, in-browser) transcription, .srt + .txt downloads
 - [x] 07-playback — in-app playback of the finished recording (native controls)
+- [x] 08-ui-revisions — transcribe gated to mic recordings, text removals, centered heading
 
 ## Decisions log
 

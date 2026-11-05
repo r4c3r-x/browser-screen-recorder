@@ -49,10 +49,28 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   const filePath = await download.path();
   expect(fs.statSync(filePath).size).toBeGreaterThan(0);
 
+  // Transcription is only offered for mic recordings: this one had none.
+  const transcribeButton = page.getByRole('button', { name: 'Transcribe recording' });
+  await expect(transcribeButton).toBeHidden();
+
+  // Discard, then record with the microphone to unlock transcription.
+  await page.getByRole('button', { name: 'Discard recording' }).click();
+  await expect(page.getByRole('button', { name: 'Download recording' })).toBeDisabled();
+  await expect(transcribeButton).toBeHidden();
+  await expect(page.locator('#transcript-status')).toBeHidden();
+  await expect(page.locator('#playback')).toBeHidden();
+
+  await page.getByLabel('Include microphone').check();
+  await page.getByRole('button', { name: 'Start recording' }).click();
+  await expect(page.locator('#state-chip')).toHaveText('Recording', { timeout: 10_000 });
+  await page.waitForTimeout(1300); // first timeslice guarantees a non-empty blob
+  await page.getByRole('button', { name: 'Stop recording' }).click();
+  await expect(page.locator('#state-chip')).toHaveText('Finished');
+
   // Transcription controls: enabled after finish; clicking shows the
   // offline-model loading state (the 41 MB model download is not awaited
   // in tests).
-  const transcribeButton = page.getByRole('button', { name: 'Transcribe recording' });
+  await expect(transcribeButton).toBeVisible();
   await expect(transcribeButton).toBeEnabled();
   await transcribeButton.click();
   await expect(page.locator('#transcript-status')).toBeVisible();
@@ -69,7 +87,7 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   // Discard re-locks the save controls and resets the transcript state.
   await page.getByRole('button', { name: 'Discard recording' }).click();
   await expect(page.getByRole('button', { name: 'Download recording' })).toBeDisabled();
-  await expect(transcribeButton).toBeDisabled();
+  await expect(transcribeButton).toBeHidden();
   await expect(page.locator('#transcript-status')).toBeHidden();
   await expect(playbackVideo).toBeHidden();
 });

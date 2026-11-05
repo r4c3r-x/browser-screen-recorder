@@ -14,10 +14,6 @@
       <section class="preview" aria-label="Preview and playback">
         <video id="preview" class="preview-video" muted playsinline hidden></video>
         <video id="playback" class="preview-video" controls playsinline hidden></video>
-        <p id="preview-empty" class="preview-empty">
-          The capture preview appears here once a recording starts, and the
-          finished recording plays here.
-        </p>
       </section>
 
       <section class="status" aria-label="Recording status">
@@ -46,11 +42,6 @@
           <button id="download-srt" type="button" class="button" hidden>Download subtitles (.srt)</button>
         </div>
         <p id="transcript-status" class="transcript-status" hidden></p>
-        <p class="transcript-note">
-          Transcription runs entirely in this browser with an offline speech
-          model (US English). The first run downloads the 41 MB model once
-          and caches it. Nothing is uploaded; no account or key is needed.
-        </p>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>
