@@ -41,6 +41,20 @@ quality standard; the ICM layers apply it.
 - `npm run test` — unit tests (vitest)
 - `npm run test:e2e` — browser e2e (playwright, chromium)
 
+## Scope discipline (binding — overrides any default behavior)
+
+- Implement only what the user explicitly asked for. If the user's message
+  is a question ("is it possible to…?", "how large is…?"), it is a request
+  for information: answer it and stop. Do not build.
+- Never add UI elements, options, settings, or files beyond the request.
+  If an extension seems clearly valuable, propose it in one sentence and
+  wait for a yes.
+- New work enters this workspace only through a stage contract that quotes
+  the user's request verbatim in its Revisions/Process. A stage whose scope
+  the agent invented is invalid and must be reverted.
+- After finishing a request, list anything you deliberately did NOT do so
+  the user can steer; do not do it for them.
+
 ## Code conventions (summary — full rules in vibe-code-rules.md)
 
 - Files < 300 lines, functions < 50 lines, no `any`, no commented-out code.

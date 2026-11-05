@@ -16,6 +16,7 @@ stage contract at once.
 | 06 | transcript | complete | stages/06-transcript/CONTEXT.md | stages/06-transcript/output/stage-report.md |
 | 07 | playback | complete | stages/07-playback/CONTEXT.md | stages/07-playback/output/stage-report.md |
 | 08 | ui-revisions | complete | stages/08-ui-revisions/CONTEXT.md | stages/08-ui-revisions/output/stage-report.md |
+| 09 | quality | complete | stages/09-quality/CONTEXT.md | stages/09-quality/output/stage-report.md |
 
 ## How to execute a stage
 
@@ -29,6 +30,9 @@ stage contract at once.
 
 ## Rules
 
+- **Nothing is implemented until the user explicitly asks for it.** Questions
+  are answered, not built. Proposals are made in one sentence and wait for a
+  yes. Every stage contract must quote the user's request that justifies it.
 - Stages communicate via markdown files only; the `output/` of stage N is the
   input of stage N+1. Humans may edit any output file between stages — the
   next stage picks up the edited version.
