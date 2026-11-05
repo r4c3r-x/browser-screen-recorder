@@ -22,6 +22,7 @@ import { createTranscriptControls } from './ui/transcript-controls';
 
 const bannerRegion = requireElement('banner-region');
 const preview = requireVideo('preview');
+const playback = requireVideo('playback');
 const previewEmpty = requireElement('preview-empty');
 
 const session = createRecordingSession();
@@ -49,6 +50,7 @@ const controls = createControls({
     lastSegments = null;
     transcriber.cancel();
     status.reset();
+    showPreviewArea('empty');
     refreshControls();
     refreshTranscriptControls();
   },
@@ -80,6 +82,7 @@ const transcriptControls = createTranscriptControls({
 let lastResult: RecordingResult | null = null;
 let lastSegments: TranscriptSegment[] | null = null;
 let transcriptPhase: TranscriberPhase = 'idle';
+let playbackUrl: string | null = null;
 
 const transcriber = createTranscriber({
   onPhase: (phase) => {
@@ -111,7 +114,7 @@ session.subscribe((event) => {
     case 'state-changed':
       status.setState(event.state);
       if (event.state === 'finished' && !lastResult) {
-        showPreview(false);
+        showPreviewArea('empty');
       }
       refreshControls();
       refreshTranscriptControls();
@@ -123,12 +126,13 @@ session.subscribe((event) => {
       status.setSize(event.bytes);
       break;
     case 'capture-started':
-      showPreview(true);
+      showPreviewArea('live');
       preview.srcObject = event.stream;
       status.setMime(event.mimeType);
       break;
     case 'recording-complete':
       lastResult = event.result;
+      loadPlayback(event.result);
       refreshControls();
       refreshTranscriptControls();
       break;
@@ -168,12 +172,33 @@ function reportError(code: SessionErrorCode, rawMessage: string): void {
   banner.showError(copy ? copy : `Recording failed unexpectedly. ${rawMessage}`);
 }
 
-function showPreview(visible: boolean): void {
-  preview.hidden = !visible;
-  previewEmpty.hidden = visible;
-  if (!visible) {
+/**
+ * Three-state preview area: the muted live capture while recording, the
+ * finished recording in a native-controls player after it, or the empty
+ * hint. Exactly one state is visible at a time.
+ */
+function showPreviewArea(mode: 'live' | 'playback' | 'empty'): void {
+  preview.hidden = mode !== 'live';
+  playback.hidden = mode !== 'playback';
+  previewEmpty.hidden = mode !== 'empty';
+  if (mode !== 'live') {
     preview.srcObject = null;
   }
+  if (mode !== 'playback' && playbackUrl !== null) {
+    URL.revokeObjectURL(playbackUrl);
+    playbackUrl = null;
+    playback.removeAttribute('src');
+    playback.load();
+  }
+}
+
+function loadPlayback(result: RecordingResult): void {
+  if (playbackUrl !== null) {
+    URL.revokeObjectURL(playbackUrl);
+  }
+  playbackUrl = URL.createObjectURL(result.blob);
+  playback.src = playbackUrl;
+  showPreviewArea('playback');
 }
 
 function downloadBlob(blob: Blob, filename: string): void {

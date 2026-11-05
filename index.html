@@ -11,10 +11,12 @@
 
       <section id="banner-region" class="banner-region" aria-live="polite"></section>
 
-      <section class="preview" aria-label="Capture preview">
+      <section class="preview" aria-label="Preview and playback">
         <video id="preview" class="preview-video" muted playsinline hidden></video>
+        <video id="playback" class="preview-video" controls playsinline hidden></video>
         <p id="preview-empty" class="preview-empty">
-          The capture preview appears here once a recording starts.
+          The capture preview appears here once a recording starts, and the
+          finished recording plays here.
         </p>
       </section>
 

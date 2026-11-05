@@ -58,11 +58,20 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   await expect(page.locator('#transcript-status')).toBeVisible();
   await expect(page.locator('#transcript-status')).toContainText('model');
 
+  // Playback: the finished recording is watchable in-app via native controls.
+  const playbackVideo = page.locator('#playback');
+  await expect(playbackVideo).toBeVisible();
+  expect(await playbackVideo.getAttribute('src')).toMatch(/^blob:/);
+  const duration = await playbackVideo.evaluate((element) => (element as HTMLVideoElement).duration);
+  expect(duration).toBeGreaterThan(0);
+  await expect(page.locator('#preview')).toBeHidden();
+
   // Discard re-locks the save controls and resets the transcript state.
   await page.getByRole('button', { name: 'Discard recording' }).click();
   await expect(page.getByRole('button', { name: 'Download recording' })).toBeDisabled();
   await expect(transcribeButton).toBeDisabled();
   await expect(page.locator('#transcript-status')).toBeHidden();
+  await expect(playbackVideo).toBeHidden();
 });
 
 test('shows an error banner and recovers when screen permission is denied', async ({

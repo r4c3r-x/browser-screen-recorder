@@ -2,8 +2,9 @@
 
 Records your screen (or a window or tab) directly from the browser and
 downloads the file. Optional microphone and system-audio capture, pause and
-resume, live duration and size readout, and optional transcription of the
-finished recording into .srt subtitles and a .txt transcript.
+resume, live duration and size readout, in-app playback of the finished
+recording, and optional transcription into .srt subtitles and a .txt
+transcript.
 
 Privacy: everything runs locally. Recording, encoding, and transcription
 happen entirely in your browser — nothing is ever uploaded, there are no
