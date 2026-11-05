@@ -24,6 +24,7 @@ const bannerRegion = requireElement('banner-region');
 const statusRegion = requireElement('status');
 const preview = requireVideo('preview');
 const playback = requireVideo('playback');
+const discardHint = requireElement('discard-hint');
 
 const session = createRecordingSession();
 const banner = createErrorBanner(bannerRegion);
@@ -44,16 +45,6 @@ const controls = createControls({
         buildRecordingFilename(new Date(), extensionFromMime(lastResult.mimeType)),
       );
     }
-  },
-  onDiscard: () => {
-    lastResult = null;
-    lastSegments = null;
-    lastMicIncluded = false;
-    transcriber.cancel();
-    status.reset();
-    showPreviewArea('empty');
-    refreshControls();
-    refreshTranscriptControls();
   },
 });
 const transcriptControls = createTranscriptControls({
@@ -121,6 +112,7 @@ session.subscribe((event) => {
       if (event.state === 'finished' && !lastResult) {
         showPreviewArea('empty');
       }
+      updateFinishHint();
       refreshControls();
       refreshTranscriptControls();
       break;
@@ -131,6 +123,10 @@ session.subscribe((event) => {
       status.setSize(event.bytes);
       break;
     case 'capture-started':
+      // Starting over invalidates the previous recording's leftovers
+      // (there is no discard button: reloading or re-recording is the reset).
+      lastSegments = null;
+      transcriber.cancel();
       showPreviewArea('live');
       preview.srcObject = event.stream;
       status.setMime(event.mimeType);
@@ -139,6 +135,7 @@ session.subscribe((event) => {
       lastResult = event.result;
       lastMicIncluded = event.micIncluded;
       loadPlayback(event.result);
+      updateFinishHint();
       refreshControls();
       refreshTranscriptControls();
       break;
@@ -151,10 +148,12 @@ session.subscribe((event) => {
   }
 });
 
-// Warn before closing or reloading while a recording is active.
+// Warn before closing or reloading while a recording is active, or while a
+// finished recording has not been kept: reloading is the discard path.
 window.addEventListener('beforeunload', (event) => {
   const state = session.getState();
-  if (state === 'recording' || state === 'paused') {
+  const recording = state === 'recording' || state === 'paused';
+  if (recording || (state === 'finished' && lastResult !== null)) {
     event.preventDefault();
     event.returnValue = '';
   }
@@ -173,6 +172,12 @@ function refreshTranscriptControls(): void {
     transcriptPhase,
     hasSegments,
   );
+}
+
+/** The reload-to-discard hint applies exactly while a recording is unsaved. */
+function updateFinishHint(): void {
+  discardHint.hidden =
+    !(session.getState() === 'finished' && lastResult !== null);
 }
 
 function reportError(code: SessionErrorCode, rawMessage: string): void {
@@ -240,5 +245,6 @@ function requireVideo(id: string): HTMLVideoElement {
 
 statusRegion.hidden = true; // boot state is idle: nothing to report yet
 status.reset();
+updateFinishHint();
 refreshControls();
 refreshTranscriptControls();

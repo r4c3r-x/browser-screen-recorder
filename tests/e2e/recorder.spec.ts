@@ -6,8 +6,11 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   const startButton = page.getByRole('button', { name: 'Start recording' });
   await expect(startButton).toBeEnabled();
 
-  // Idle state shows no status bar: it would only read "Idle / 00:00 / 0 B".
+  // Idle state shows no status bar and no save controls: nothing exists yet.
   await expect(page.locator('#status')).toBeHidden();
+  await expect(page.locator('#download')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Discard recording' })).toHaveCount(0);
+  await expect(page.locator('#discard-hint')).toBeHidden();
 
   await startButton.click();
 
@@ -43,7 +46,9 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   await expect(chip).toHaveText('Finished');
 
   const downloadButton = page.getByRole('button', { name: 'Download recording' });
+  await expect(downloadButton).toBeVisible();
   await expect(downloadButton).toBeEnabled();
+  await expect(page.locator('#discard-hint')).toBeVisible();
   const downloadPromise = page.waitForEvent('download', { timeout: 20_000 });
   await downloadButton.click();
   const download = await downloadPromise;
@@ -57,13 +62,7 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   const transcribeButton = page.getByRole('button', { name: 'Transcribe recording' });
   await expect(transcribeButton).toBeHidden();
 
-  // Discard, then record with the microphone to unlock transcription.
-  await page.getByRole('button', { name: 'Discard recording' }).click();
-  await expect(page.getByRole('button', { name: 'Download recording' })).toBeDisabled();
-  await expect(transcribeButton).toBeHidden();
-  await expect(page.locator('#transcript-status')).toBeHidden();
-  await expect(page.locator('#playback')).toBeHidden();
-
+  // Record with the microphone and camera to unlock transcription.
   await page.getByLabel('Include microphone').check();
   await page.getByLabel('Include camera').check(); // fake device: exercises the compositor
   await page.getByRole('button', { name: 'Start recording' }).click();
@@ -89,12 +88,20 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   expect(duration).toBeGreaterThan(0);
   await expect(page.locator('#preview')).toBeHidden();
 
-  // Discard re-locks the save controls and resets the transcript state.
-  await page.getByRole('button', { name: 'Discard recording' }).click();
-  await expect(page.getByRole('button', { name: 'Download recording' })).toBeDisabled();
-  await expect(transcribeButton).toBeHidden();
-  await expect(page.locator('#transcript-status')).toBeHidden();
-  await expect(playbackVideo).toBeHidden();
+  // Discard is a reload: the browser asks for confirmation first.
+  let beforeUnloadFired = false;
+  page.on('dialog', (dialog) => {
+    if (dialog.type() === 'beforeunload') {
+      beforeUnloadFired = true;
+      void dialog.accept();
+    }
+  });
+  await page.reload();
+  expect(beforeUnloadFired).toBe(true);
+
+  // After the reload the session is idle again.
+  await expect(page.locator('#download')).toBeHidden();
+  await expect(page.locator('#discard-hint')).toBeHidden();
 });
 
 test('shows an error banner and recovers when screen permission is denied', async ({
