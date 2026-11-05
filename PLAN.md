@@ -23,6 +23,7 @@ Chromium-first browsers.
 - [x] 08-ui-revisions — transcribe gated to mic recordings, text removals, centered heading
 - [x] 09-quality — fixed Balanced bitrate cap (1.5 Mbps video / 96 kbps audio), no UI
 - [x] 10-approval-gate — user-approved states saved as approved/vN tags, restore procedure
+- [x] 11-webcam-overlay — camera bubble composited over the capture (fail-soft, Worker-driven draws)
 
 ## Decisions log
 
@@ -47,9 +48,10 @@ Chromium-first browsers.
 
 ## Deferred (not in v1)
 
-- Recordings library (IndexedDB storage, in-app playback, rename, delete)
-- Webcam overlay (canvas compositing)
-- Git remote, CI, deployment (the `vite build` output is static; host anywhere)
+- Recordings library (IndexedDB storage, in-app playback, rename, delete) —
+  in-app playback shipped in stage 07; full library still deferred
+- ~~Webcam overlay (canvas compositing)~~ — shipped in stage 11
+- Git remote, CI, deployment — shipped in stage 10/11 era (GitHub Pages)
 
 ## Definition of done (vibe §12)
 

@@ -18,6 +18,7 @@ stage contract at once.
 | 08 | ui-revisions | complete | stages/08-ui-revisions/CONTEXT.md | stages/08-ui-revisions/output/stage-report.md |
 | 09 | quality | complete | stages/09-quality/CONTEXT.md | stages/09-quality/output/stage-report.md |
 | 10 | approval-gate | complete | stages/10-approval-gate/CONTEXT.md | stages/10-approval-gate/output/stage-report.md |
+| 11 | webcam-overlay | complete | stages/11-webcam-overlay/CONTEXT.md | stages/11-webcam-overlay/output/stage-report.md |
 
 ## How to execute a stage
 

@@ -69,3 +69,12 @@ export const TRANSCRIPT_MAX_SEGMENT_CHARS = 84;
 
 /** Subtitle grouping: a speaker pause longer than this starts a new segment. */
 export const TRANSCRIPT_MAX_WORD_GAP_SECONDS = 1.5;
+
+/** Webcam overlay: composited frames per second. */
+export const WEBCAM_FRAME_RATE = 30;
+
+/** Webcam overlay: bubble width as a fraction of the capture width. */
+export const WEBCAM_BUBBLE_WIDTH_RATIO = 0.22;
+
+/** Webcam overlay: bubble margin from the capture edge, in px. */
+export const WEBCAM_BUBBLE_MARGIN_PX = 24;

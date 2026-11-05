@@ -1,10 +1,10 @@
 # Browser Screen Recorder
 
 Records your screen (or a window or tab) directly from the browser and
-downloads the file. Optional microphone and system-audio capture, pause and
-resume, live duration and size readout, in-app playback of the finished
-recording, and optional transcription into .srt subtitles and a .txt
-transcript.
+downloads the file. Optional microphone and system-audio capture, an
+optional camera bubble composited over the capture, pause and resume, live
+duration and size readout, in-app playback of the finished recording, and
+optional transcription into .srt subtitles and a .txt transcript.
 
 **Live:** https://r4c3r-x.github.io/browser-screen-recorder/
 

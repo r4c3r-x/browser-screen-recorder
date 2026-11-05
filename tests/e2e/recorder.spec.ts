@@ -65,6 +65,7 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   await expect(page.locator('#playback')).toBeHidden();
 
   await page.getByLabel('Include microphone').check();
+  await page.getByLabel('Include camera').check(); // fake device: exercises the compositor
   await page.getByRole('button', { name: 'Start recording' }).click();
   await expect(page.locator('#state-chip')).toHaveText('Recording', { timeout: 10_000 });
   await page.waitForTimeout(1300); // first timeslice guarantees a non-empty blob
