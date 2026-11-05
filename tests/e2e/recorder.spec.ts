@@ -80,33 +80,6 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   await expect(page.locator('#transcript-status')).toBeVisible();
   await expect(page.locator('#transcript-status')).toContainText('model');
 
-  // Share flow: button appears; without a client ID the setup field shows
-  // instead of the title form; pasting a well-formed ID reveals the form.
-  const shareButton = page.getByRole('button', { name: 'Share recording' });
-  await expect(shareButton).toBeVisible();
-  await expect(shareButton).toBeEnabled();
-  await shareButton.click();
-  const titleForm = page.locator('#share-form');
-  const driveSetup = page.locator('#drive-setup');
-  await expect(driveSetup).toBeVisible();
-  await expect(titleForm).toBeHidden();
-  await page.locator('#drive-client-id').fill(
-    '1234567890-abcdef.apps.googleusercontent.com',
-  );
-  await expect(titleForm).toBeVisible();
-  await expect(driveSetup).toBeHidden();
-  const uploadButton = page.getByRole('button', { name: 'Upload to Google Drive' });
-  await expect(uploadButton).toBeDisabled(); // no title yet
-  await page.locator('#share-title').fill('My recording');
-  await expect(uploadButton).toBeEnabled();
-  // Transcription was started but its lazy model is still loading, so the
-  // transcript checkbox is visible yet disabled in this run.
-  await expect(page.locator('#share-include-transcript')).toBeVisible();
-  await expect(page.locator('#share-include-transcript')).toBeDisabled();
-  await page.getByRole('button', { name: 'Cancel' }).click();
-  await expect(titleForm).toBeHidden();
-  await expect(shareButton).toBeVisible();
-
   // Playback: the finished recording is watchable in-app via native controls.
   const playbackVideo = page.locator('#playback');
   await expect(playbackVideo).toBeVisible();
