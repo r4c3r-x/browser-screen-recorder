@@ -22,3 +22,5 @@ Thumbs.db
 # ZCode workspace metadata
 .zcode/
 .vosk-cache/
+.zcode-site/
+.zcode-site.json
