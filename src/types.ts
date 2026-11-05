@@ -10,6 +10,8 @@ export type RecordingState =
 export interface StartRecordingOptions {
   /** Include microphone audio in the recording (fail-soft if denied). */
   includeMic: boolean;
+  /** Composite a camera bubble into the video (fail-soft if denied). */
+  includeCamera: boolean;
 }
 
 /** Outcome of a completed recording. */

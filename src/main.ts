@@ -29,10 +29,10 @@ const session = createRecordingSession();
 const banner = createErrorBanner(bannerRegion);
 const status = createStatusPanel();
 const controls = createControls({
-  onStart: (includeMic) => {
+  onStart: (includeMic, includeCamera) => {
     banner.clear();
     status.reset();
-    void session.start({ includeMic });
+    void session.start({ includeMic, includeCamera });
   },
   onPause: () => session.pause(),
   onResume: () => session.resume(),

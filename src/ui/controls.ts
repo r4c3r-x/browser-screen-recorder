@@ -1,7 +1,7 @@
 import type { RecordingState } from '../types';
 
 export interface ControlHandlers {
-  onStart(includeMic: boolean): void;
+  onStart(includeMic: boolean, includeCamera: boolean): void;
   onPause(): void;
   onResume(): void;
   onStop(): void;
@@ -25,8 +25,11 @@ export function createControls(handlers: ControlHandlers): Controls {
   const download = requireButton('download');
   const discard = requireButton('discard');
   const includeMic = requireInput('include-mic');
+  const includeCamera = requireInput('include-camera');
 
-  start.addEventListener('click', () => handlers.onStart(includeMic.checked));
+  start.addEventListener('click', () =>
+    handlers.onStart(includeMic.checked, includeCamera.checked),
+  );
   pause.addEventListener('click', () => handlers.onPause());
   resume.addEventListener('click', () => handlers.onResume());
   stop.addEventListener('click', () => handlers.onStop());
@@ -46,6 +49,7 @@ export function createControls(handlers: ControlHandlers): Controls {
     stop.hidden = !(state === 'recording' || state === 'paused');
 
     includeMic.disabled = state !== 'idle' && state !== 'finished';
+    includeCamera.disabled = state !== 'idle' && state !== 'finished';
 
     const canSave = state === 'finished' && hasResult;
     download.disabled = !canSave;

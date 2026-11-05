@@ -13,11 +13,13 @@ import type {
   StartRecordingOptions,
 } from '../types';
 import { createMixedAudio } from './audio-mixer';
+import { requestCameraCapture, type CameraSource } from './camera-source';
 import {
   ScreenCaptureError,
   requestScreenCapture,
   type CaptureSource,
 } from './capture-source';
+import { createCanvasCompositor } from './canvas-compositor';
 import { createElapsedTracker, type ElapsedTracker } from './elapsed-time';
 import {
   chooseRecordingFormat,
@@ -60,6 +62,8 @@ export function createRecordingSession(): RecordingSession {
   let timerHandle: ReturnType<typeof setInterval> | null = null;
   const listeners = new Set<(event: SessionEvent) => void>();
   let requestedMic = false;
+  let cameraSource: CameraSource | null = null;
+  let compositor: Awaited<ReturnType<typeof createCanvasCompositor>> | null = null;
 
   function emit(event: SessionEvent): void {
     for (const listener of listeners) {
@@ -115,13 +119,26 @@ export function createRecordingSession(): RecordingSession {
 
     micStream = options.includeMic ? await requestMicFailSoft() : null;
     requestedMic = options.includeMic;
-    beginRecording(format, QUALITY_PRESETS[DEFAULT_QUALITY]);
+    cameraSource = options.includeCamera ? await requestCameraFailSoft() : null;
+    await beginRecording(format, QUALITY_PRESETS[DEFAULT_QUALITY]);
   }
 
-  function beginRecording(
+  async function requestCameraFailSoft(): Promise<CameraSource | null> {
+    try {
+      return await requestCameraCapture();
+    } catch {
+      emit({
+        type: 'notice',
+        message: 'Camera unavailable. Recording without the camera bubble.',
+      });
+      return null;
+    }
+  }
+
+  async function beginRecording(
     format: RecordingFormat,
     bitrates: { videoBitsPerSecond: number; audioBitsPerSecond: number },
-  ): void {
+  ): Promise<void> {
     if (!capture) {
       return;
     }
@@ -139,9 +156,20 @@ export function createRecordingSession(): RecordingSession {
     mixedAudio = createMixedAudio(systemAudioTrack, micTrack);
     const audioTrack = mixedAudio.track;
 
+    // The recorded video is either the raw screen track or the composited
+    // screen + camera bubble. Audio never touches the compositor.
+    let recordedVideoTrack: MediaStreamTrack = videoTrack;
+    if (cameraSource) {
+      compositor = await createCanvasCompositor(activeCapture.stream, cameraSource.track);
+      const compositeTrack = compositor.canvasStream.getVideoTracks()[0];
+      if (compositeTrack) {
+        recordedVideoTrack = compositeTrack;
+      }
+    }
+
     tracker = createElapsedTracker(Date.now());
     recorderHandle = startRecorder(
-      new MediaStream(audioTrack ? [videoTrack, audioTrack] : [videoTrack]),
+      new MediaStream(audioTrack ? [recordedVideoTrack, audioTrack] : [recordedVideoTrack]),
       format,
       bitrates,
       {
@@ -160,7 +188,11 @@ export function createRecordingSession(): RecordingSession {
     }, TIMER_TICK_MS);
 
     setState('recording');
-    emit({ type: 'capture-started', stream: activeCapture.stream, mimeType: format.mimeType });
+    emit({
+      type: 'capture-started',
+      stream: new MediaStream([recordedVideoTrack]),
+      mimeType: format.mimeType,
+    });
     void activeCapture.ended.then(() => {
       if (state === 'recording' || state === 'paused') {
         void finishFromInterruption();
@@ -243,6 +275,10 @@ export function createRecordingSession(): RecordingSession {
     capture = null;
     micStream?.getTracks().forEach((track) => track.stop());
     micStream = null;
+    compositor?.stop();
+    compositor = null;
+    cameraSource?.dispose();
+    cameraSource = null;
     mixedAudio?.stop();
     mixedAudio = null;
     recorderHandle = null;
