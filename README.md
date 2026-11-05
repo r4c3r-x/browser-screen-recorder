@@ -2,8 +2,14 @@
 
 Records your screen (or a window or tab) directly from the browser and
 downloads the file. Optional microphone and system-audio capture, pause and
-resume, live duration and size readout. Nothing is uploaded: capture and
-encoding happen entirely in your browser.
+resume, live duration and size readout, and optional transcription of the
+finished recording into .srt subtitles and a .txt transcript.
+
+Privacy: recording, capture, and encoding happen entirely in your browser —
+the recording itself is never uploaded. Transcription is optional and uses
+your own API key (BYOK): when you run it, the recording's audio track (never
+the video) is sent over HTTPS to the service you configure. The key is
+stored only in your browser.
 
 ## Status
 
@@ -36,13 +42,26 @@ npm run preview   # serve the production build
 ## Test
 
 ```
-npm run test        # 32 unit tests (pure logic)
+npm run test        # 42 unit tests (pure logic)
 npm run test:e2e    # 3 browser end-to-end tests (chromium, fake media)
 ```
 
 The e2e suite runs Chromium with fake media streams and an auto-selected
 capture source, so it needs no interaction. First run installs the browser
 binary (`npx playwright install chromium`, ~130 MB).
+
+## Transcription
+
+1. Get a free API key at [console.groq.com](https://console.groq.com) (no
+   credit card; other OpenAI-compatible providers work too).
+2. Open "Transcription settings" in the app, paste the key (the Groq URL
+   and model are prefilled), then record.
+3. After stopping, press "Transcribe recording". When it finishes, download
+   the .srt subtitles or the .txt transcript.
+
+The default service is Groq's free tier (whisper-large-v3-turbo): about
+8 hours of audio per day, 25 MB per file (roughly 12 minutes of audio per
+recording — longer files are rejected with a clear message before upload).
 
 ## How it works
 
@@ -51,6 +70,11 @@ and (optionally) the microphone into one track; `MediaRecorder` encodes to
 WebM, falling back to MP4 where WebM is unavailable. The mime type is
 negotiated at runtime from a preference list, and the download filename is
 derived from the chosen format.
+
+Transcription decodes the recording's audio to 16 kHz mono PCM locally,
+wraps it in a WAV file, and uploads that single audio file to an
+OpenAI-compatible `/audio/transcriptions` endpoint. Returned segments are
+rendered locally into .srt and .txt downloads.
 
 ## Deploy
 

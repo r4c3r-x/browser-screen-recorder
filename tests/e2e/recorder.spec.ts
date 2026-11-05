@@ -49,9 +49,19 @@ test('records, pauses, resumes, stops, and downloads a recording', async ({ page
   const filePath = await download.path();
   expect(fs.statSync(filePath).size).toBeGreaterThan(0);
 
-  // Discard re-locks the save controls.
+  // Transcription controls: enabled after finish, blocked without a key.
+  const transcribeButton = page.getByRole('button', { name: 'Transcribe recording' });
+  await expect(transcribeButton).toBeEnabled();
+  await expect(page.locator('#transcribe-base-url')).toHaveValue(/groq\.com/);
+  await transcribeButton.click();
+  await expect(page.getByRole('alert')).toContainText('API key');
+  await page.getByRole('alert').getByRole('button', { name: 'Dismiss' }).click();
+
+  // Discard re-locks the save controls and resets the transcript state.
   await page.getByRole('button', { name: 'Discard recording' }).click();
   await expect(page.getByRole('button', { name: 'Download recording' })).toBeDisabled();
+  await expect(transcribeButton).toBeDisabled();
+  await expect(page.locator('#transcript-status')).toBeHidden();
 });
 
 test('shows an error banner and recovers when screen permission is denied', async ({

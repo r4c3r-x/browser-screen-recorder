@@ -19,6 +19,16 @@ export function extensionFromMime(mimeType: string): string {
   return 'webm';
 }
 
+/** Build the download filename for a transcript text file. */
+export function buildTranscriptFilename(now: Date): string {
+  return `${RECORDING_FILENAME_PREFIX}-transcript-${formatTimestamp(now)}.txt`;
+}
+
+/** Build the download filename for an SRT subtitles file. */
+export function buildSrtFilename(now: Date): string {
+  return `${RECORDING_FILENAME_PREFIX}-subtitles-${formatTimestamp(now)}.srt`;
+}
+
 function formatTimestamp(date: Date): string {
   const year = String(date.getFullYear()).padStart(4, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');

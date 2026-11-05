@@ -25,3 +25,20 @@ export const SERVER_PORT = 5173;
 
 /** Delay (ms) before revoking a download object URL so saves complete. */
 export const DOWNLOAD_URL_RELEASE_MS = 10_000;
+
+/**
+ * Default transcription provider: an OpenAI-compatible endpoint with a free
+ * tier (Groq, whisper-large-v3-turbo, no credit card). Users can point the
+ * settings at OpenAI or any compatible provider instead.
+ */
+export const DEFAULT_TRANSCRIPTION_BASE_URL = 'https://api.groq.com/openai/v1';
+export const DEFAULT_TRANSCRIPTION_MODEL = 'whisper-large-v3-turbo';
+
+/** localStorage key for user transcription settings (BYOK, never committed). */
+export const TRANSCRIPTION_SETTINGS_STORAGE_KEY = 'screen-recorder.transcription';
+
+/** Upload size cap: matches the Groq free tier (25 MB per file). */
+export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+
+/** Sample rate (Hz) for the uploaded WAV: speech models expect 16 kHz. */
+export const TARGET_SAMPLE_RATE_HZ = 16_000;
