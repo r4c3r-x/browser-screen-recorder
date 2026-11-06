@@ -11,6 +11,8 @@ export interface ControlHandlers {
 export interface Controls {
   /** Sync button visibility/enabled state and labels with session state. */
   update(state: RecordingState, hasResult: boolean): void;
+  /** Lock the whole recording UI off (browser cannot capture screens). */
+  setUnsupported(unsupported: boolean): void;
 }
 
 const START_LABEL = 'Start recording';
@@ -24,6 +26,7 @@ export function createControls(handlers: ControlHandlers): Controls {
   const download = requireButton('download');
   const includeMic = requireInput('include-mic');
   const includeCamera = requireInput('include-camera');
+  let unsupported = false;
 
   start.addEventListener('click', () =>
     handlers.onStart(includeMic.checked, includeCamera.checked),
@@ -33,9 +36,28 @@ export function createControls(handlers: ControlHandlers): Controls {
   stop.addEventListener('click', () => handlers.onStop());
   download.addEventListener('click', () => handlers.onDownload());
 
-  return { update };
+  return { update, setUnsupported };
+
+  function setUnsupported(value: boolean): void {
+    unsupported = value;
+  }
 
   function update(state: RecordingState, hasResult: boolean): void {
+    if (unsupported) {
+      // The browser cannot capture screens: nothing here is operable.
+      start.hidden = false;
+      start.disabled = true;
+      start.textContent = START_LABEL;
+      start.setAttribute('aria-busy', 'false');
+      pause.hidden = true;
+      resume.hidden = true;
+      stop.hidden = true;
+      download.hidden = true;
+      includeMic.disabled = true;
+      includeCamera.disabled = true;
+      return;
+    }
+
     start.hidden = state === 'recording' || state === 'paused';
     start.disabled = state === 'requesting';
     start.textContent = state === 'requesting' ? START_LABEL_WAITING : START_LABEL;

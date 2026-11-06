@@ -17,6 +17,17 @@ export class ScreenCaptureError extends Error {
   }
 }
 
+/**
+ * Whether this browser exposes getDisplayMedia at all. Mobile and in-app
+ * browsers do not: fail honestly upfront instead of after the first click.
+ */
+export function isScreenCaptureSupported(): boolean {
+  return (
+    typeof navigator !== 'undefined' &&
+    typeof navigator.mediaDevices?.getDisplayMedia === 'function'
+  );
+}
+
 /** A live display capture: the stream, its end signal, and teardown. */
 export interface CaptureSource {
   stream: MediaStream;

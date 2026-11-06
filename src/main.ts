@@ -6,6 +6,7 @@ import {
   buildTranscriptFilename,
   extensionFromMime,
 } from './recorder/filename';
+import { isScreenCaptureSupported } from './recorder/capture-source';
 import { createRecordingSession } from './recorder/recording-session';
 import { createTranscriber } from './transcript/vosk-transcriber';
 import { formatSrt, formatTranscript } from './transcript/srt';
@@ -248,3 +249,13 @@ status.reset();
 updateFinishHint();
 refreshControls();
 refreshTranscriptControls();
+
+// Upfront capability check: mobile and in-app browsers lack screen
+// capture entirely. Fail honestly before the user clicks anything.
+if (!isScreenCaptureSupported()) {
+  controls.setUnsupported(true);
+  banner.showError(
+    "Screen recording isn't supported in this browser. Use Chrome or Edge on a desktop computer.",
+  );
+  refreshControls();
+}

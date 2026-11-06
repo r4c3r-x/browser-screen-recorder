@@ -27,6 +27,7 @@ Chromium-first browsers.
 - [x] 12-finish-flow — no discard button; download hidden until ready; reload (with confirm) is the discard path
 - [x] 13-compact-cap — Compact (600k/64k) is the default; recordings auto-stop at 30 minutes
 - [x] 14-drive-share — REMOVED at user direction (OAuth client ID setup rejected); see stages/14-drive-share/
+- [x] 15-support-check — upfront check: unsupported browsers (phones, in-app) show a message and locked controls at load
 
 ## Decisions log
 

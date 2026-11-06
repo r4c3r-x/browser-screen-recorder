@@ -22,6 +22,7 @@ stage contract at once.
 | 12 | finish-flow | complete | stages/12-finish-flow/CONTEXT.md | stages/12-finish-flow/output/stage-report.md |
 | 13 | compact-cap | complete | stages/13-compact-cap/CONTEXT.md | stages/13-compact-cap/output/stage-report.md |
 | 14 | drive-share | removed | stages/14-drive-share/CONTEXT.md | — |
+| 15 | support-check | complete | stages/15-support-check/CONTEXT.md | stages/15-support-check/output/stage-report.md |
 
 ## How to execute a stage
 

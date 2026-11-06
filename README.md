@@ -24,8 +24,10 @@ Methodology: the filesystem is the project's status and history).
 - Node.js 20+ and npm (development only)
 - A Chromium-based browser (Chrome or Edge) for screen + system audio
   capture. Firefox works without system audio; Safari falls back to MP4
-  output. Capability differences are detected at runtime and surfaced in the
-  UI.
+  output. Phones and tablets cannot record: browsers on mobile do not
+  implement screen capture, and the app says so upfront with controls
+  locked. Capability differences are detected at runtime and surfaced in
+  the UI.
 
 ## Setup
 
