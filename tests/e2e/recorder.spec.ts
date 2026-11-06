@@ -129,6 +129,28 @@ test('shows an error banner and recovers when screen permission is denied', asyn
   await context.close();
 });
 
+test('locks the recording UI upfront when screen capture is unavailable', async ({
+  browser,
+}) => {
+  const context = await browser.newContext();
+  await context.addInitScript(() => {
+    // Phones and in-app browsers: mediaDevices exists, getDisplayMedia does not.
+    Object.defineProperty(MediaDevices.prototype, 'getDisplayMedia', {
+      get: () => undefined,
+      configurable: true,
+    });
+  });
+  const page = await context.newPage();
+  await page.goto('/');
+
+  await expect(page.getByRole('button', { name: 'Start recording' })).toBeDisabled();
+  await expect(page.getByLabel('Include microphone')).toBeDisabled();
+  await expect(page.getByLabel('Include camera')).toBeDisabled();
+  await expect(page.getByRole('alert')).toContainText("isn't supported");
+
+  await context.close();
+});
+
 test('records without microphone when mic access is denied', async ({ browser }) => {
   const context = await browser.newContext();
   await context.addInitScript(() => {
